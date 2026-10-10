@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: hermes-agent-free
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: frankfurt
+
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: meta-llama/llama-3.3-70b-instruct:free
+      - key: PORT
+        value: "10000"
+      - key: API_SERVER_KEY
+        generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_ALLOWED_USERS
+        sync: false
+      - key: TERMINAL_BACKEND
+        value: docker
+      - key: HERMES_PORT
+        value: "10000"
+      - key: DASHBOARD_PORT
+        value: "10000"
+      - key: API_SERVER_PORT
+        value: "10000"
+      - key: GATEWAY_PORT
+        value: "10000"
+      - key: REMOTE_MCP_WS
+        value: "ws://89.6.129.67:3000"
+      - key: MCP_API_KEY
+        sync: false
+
+mcpServers:
+  - name: my-server
+    transport: http/sse
+    url: https://render-ia.onrender.com/mcp
