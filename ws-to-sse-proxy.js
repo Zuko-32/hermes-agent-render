@@ -24,7 +24,6 @@ module.exports = function mountWsToSse(app, options = {}) {
     const send = (data) => {
       try {
         const payload = Buffer.isBuffer(data) ? data.toString('utf8') : data;
-        // si payload es JSON string, lo enviamos tal cual; si es objeto, lo stringify
         const out = typeof payload === 'string' ? payload : JSON.stringify(payload);
         res.write(`data: ${out}\n\n`);
       } catch (e) {
@@ -46,4 +45,3 @@ module.exports = function mountWsToSse(app, options = {}) {
     });
   });
 };
-
