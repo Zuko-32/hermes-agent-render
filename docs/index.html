@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HERMES AGENT // MASTER DOCUMENTATION // RENDER CLOUD DEPLOYMENT</title>
+  
+  <!-- Precision Typography inspired by seunghyuk.com -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090e;
+      --bg-surface: #0d111a;
+      --bg-card: rgba(14, 19, 30, 0.88);
+      --border: rgba(255, 255, 255, 0.12);
+      --border-strong: rgba(255, 255, 255, 0.28);
+      --text: #f4f4f6;
+      --text-muted: #8e95a5;
+      --accent: #00f0ff;
+      --accent-dim: rgba(0, 240, 255, 0.12);
+      --lime: #c6f135;
+      --lime-dim: rgba(198, 241, 53, 0.12);
+      --danger: #ff3366;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', -apple-system, sans-serif;
+      --display: 'Syne', 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+      line-height: 1.6;
+    }
+
+    /* Bilingual Toggle Classes */
+    body.lang-en .lang-es { display: none !important; }
+    body.lang-es .lang-en { display: none !important; }
+
+    /* Top Sticky Technical Header */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 9, 14, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .brand-mark {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .brand-mark .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--lime);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--lime);
+      display: inline-block;
+    }
+
+    .status-badge {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--lime);
+      background: var(--lime-dim);
+      border: 1px solid rgba(198, 241, 53, 0.3);
+      padding: 0.2rem 0.55rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.35rem 0.75rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .nav-btn.accent {
+      color: #000;
+      background: var(--accent);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .nav-btn.accent:hover {
+      background: #fff;
+      border-color: #fff;
+    }
+
+    /* Language Switcher */
+    .lang-switch {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+    }
+
+    .lang-opt {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-opt.active {
+      background: #fff;
+      color: #000;
+    }
+
+    /* Layout Wrapper */
+    .docs-container {
+      display: flex;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 2rem;
+      gap: 2.5rem;
+    }
+
+    /* Sticky Sidebar Navigation */
+    .docs-sidebar {
+      width: 290px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 4.5rem;
+      height: calc(100vh - 6rem);
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 4px;
+      padding: 1.25rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    .sidebar-header {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-list a {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.45rem 0.65rem;
+      border-radius: 2px;
+      display: block;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .nav-list a:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+      border-left-color: var(--accent);
+    }
+
+    .nav-list a.active {
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-left-color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Main Docs Content Area */
+    .docs-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    /* Precision Modernist Cards */
+    .doc-card {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 4px;
+      padding: clamp(1.5rem, 2.5vw, 2.5rem);
+      position: relative;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Calibration Crosshairs */
+    .doc-card::before {
+      content: "+";
+      position: absolute;
+      top: -7px;
+      left: -5px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--border-strong);
+      pointer-events: none;
+    }
+    .doc-card::after {
+      content: "+";
+      position: absolute;
+      bottom: -7px;
+      right: -5px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--border-strong);
+      pointer-events: none;
+    }
+
+    .sec-tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .sec-tag::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-family: var(--sans);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 1.5rem 0 0.6rem 0;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      color: #b5bcc9;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    ul, ol {
+      margin: 0.75rem 0 1.25rem 1.5rem;
+      color: #b5bcc9;
+      font-size: 0.93rem;
+    }
+
+    li {
+      margin-bottom: 0.4rem;
+    }
+
+    li strong {
+      color: #fff;
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .box {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 2px;
+      padding: 1.15rem 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .box:hover {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .box-title {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .box-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* Modernist Tables */
+    .table-container {
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.86rem;
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #b5bcc9;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.82em;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--accent);
+      padding: 0.15rem 0.35rem;
+      border-radius: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Code Block Containers with Copy Button */
+    .code-container {
+      margin: 1rem 0;
+      border: 1px solid var(--border);
+      background: #04060a;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: #c6f135;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: inherit;
+    }
+
+    /* Alert / Callout Boxes */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: rgba(0, 240, 255, 0.04);
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .callout.lime {
+      border-left-color: var(--lime);
+      background: rgba(198, 241, 53, 0.04);
+    }
+
+    .callout-title {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Action Buttons */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+
+    .btn-swiss {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.15rem;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .btn-swiss:hover {
+      border-color: #fff;
+      background: #fff;
+      color: #000;
+      transform: translateY(-1px);
+    }
+
+    .btn-swiss.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .btn-swiss.primary:hover {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+    }
+
+    .btn-swiss.lime {
+      background: var(--lime);
+      color: #000;
+      border-color: var(--lime);
+    }
+
+    .btn-swiss.lime:hover {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+    }
+
+    /* Architecture ASCII Banner */
+    .ascii-box {
+      background: #04060a;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      line-height: 1.35;
+      color: var(--accent);
+      overflow-x: auto;
+      margin: 1.25rem 0;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      margin-top: 4rem;
+      background: rgba(7, 9, 14, 0.95);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .footer-text {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .docs-container {
+        flex-direction: column;
+        padding: 1.25rem;
+      }
+      .docs-sidebar {
+        width: 100%;
+        position: static;
+        height: auto;
+        max-height: 250px;
+      }
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .doc-card {
+        padding: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body class="lang-es">
+
+  <!-- Top Sticky Header -->
+  <header>
+    <div class="brand-group">
+      <a href="/" class="brand-mark">
+        <span class="dot"></span>
+        HERMES // MASTER DOCS
+      </a>
+      <span class="status-badge">24/7 CLOUD HOSTED</span>
+    </div>
+
+    <div class="header-right">
+      <a href="/" class="nav-btn">
+        <span>💬</span>
+        <span class="lang-en">CHAT CONSOLE</span>
+        <span class="lang-es">CHAT CONSOLA</span>
+      </a>
+      <a href="/dashboard" class="nav-btn">
+        <span>🎛</span>
+        <span class="lang-en">DASHBOARD</span>
+        <span class="lang-es">PANEL DE CONTROL</span>
+      </a>
+      <a href="/presentation" class="nav-btn">
+        <span>📽</span>
+        <span class="lang-en">SLIDE DECK</span>
+        <span class="lang-es">PRESENTACIÓN</span>
+      </a>
+      <a href="https://github.com/thurtado1993/hermes-agent-render" target="_blank" rel="noopener" class="nav-btn accent">
+        <span>🐙</span>
+        <span>GITHUB</span>
+      </a>
+
+      <!-- Language Toggle -->
+      <div class="lang-switch">
+        <button class="lang-opt" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="lang-opt active" id="btn-es" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Container -->
+  <div class="docs-container">
+    
+    <!-- Sticky Navigation Sidebar -->
+    <aside class="docs-sidebar">
+      <div class="sidebar-header">
+        <span class="lang-en">DOCUMENTATION INDEX</span>
+        <span class="lang-es">ÍNDICE DE CONTENIDOS</span>
+        <span>[ 12 ]</span>
+      </div>
+      <nav>
+        <ul class="nav-list">
+          <li><a href="#overview"><span class="lang-en">01 // Architecture & Overview</span><span class="lang-es">01 // Visión General y Arquitectura</span></a></li>
+          <li><a href="#prerequisites"><span class="lang-en">02 // Prerequisites</span><span class="lang-es">02 // Requisitos Previos</span></a></li>
+          <li><a href="#step-1"><span class="lang-en">03 // Step 1: OpenRouter Free Key</span><span class="lang-es">03 // Paso 1: Clave OpenRouter Gratuita</span></a></li>
+          <li><a href="#step-2"><span class="lang-en">04 // Step 2: Telegram Bot Setup</span><span class="lang-es">04 // Paso 2: Configurar Bot de Telegram</span></a></li>
+          <li><a href="#step-3"><span class="lang-en">05 // Step 3: Render.com Cloud Deploy</span><span class="lang-es">05 // Paso 3: Despliegue en Render.com</span></a></li>
+          <li><a href="#step-4"><span class="lang-en">06 // Step 4: Web Chat (chat.html)</span><span class="lang-es">06 // Paso 4: Chat Web en Servidor</span></a></li>
+          <li><a href="#step-5"><span class="lang-en">07 // Step 5: Remote Web Clients</span><span class="lang-es">07 // Paso 5: Clientes Web Autónomos</span></a></li>
+          <li><a href="#step-6"><span class="lang-en">08 // Step 6: Hermes Web Dashboard</span><span class="lang-es">08 // Paso 6: Panel Hermes Dashboard</span></a></li>
+          <li><a href="#models"><span class="lang-en">09 // Free Models Catalog (:free)</span><span class="lang-es">09 // Catálogo de Modelos Gratuitos</span></a></li>
+          <li><a href="#keepalive"><span class="lang-en">10 // 24/7 Keep-Alive Strategy</span><span class="lang-es">10 // Estrategia Keep-Alive 24/7</span></a></li>
+          <li><a href="#troubleshooting"><span class="lang-en">11 // Troubleshooting & FAQ</span><span class="lang-es">11 // Preguntas Frecuentes y Diagnóstico</span></a></li>
+          <li><a href="#downloads"><span class="lang-en">12 // Config Files & Downloads</span><span class="lang-es">12 // Ficheros y Descargas Rápidas</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content Stream -->
+    <main class="docs-main">
+
+      <!-- HERO / INTRO CARD -->
+      <section class="doc-card" id="overview">
+        <div class="sec-tag">
+          <span class="lang-en">01 // ARCHITECTURE & OVERVIEW</span>
+          <span class="lang-es">01 // VISIÓN GENERAL Y ARQUITECTURA</span>
+        </div>
+        
+        <h1 class="lang-en">Free 24/7 Sovereign AI Assistant on Render & OpenRouter</h1>
+        <h1 class="lang-es">Asistente IA Autónomo 24/7 Gratuito en Render y OpenRouter</h1>
+
+        <p class="lang-en">
+          Run your personal, self-evolving, persistent Artificial Intelligence server in the cloud 24 hours a day <strong>100% free of charge ($0.00/month)</strong>. Eliminate reliance on costly recurring subscriptions (ChatGPT Plus, Claude Pro, Gemini Advanced) while gaining complete sovereignty over your data, tools, and conversations.
+        </p>
+        <p class="lang-es">
+          Ejecuta tu servidor de Inteligencia Artificial personal, evolutivo y persistente en la nube las 24 horas del día <strong>100% gratis (0,00 €/mes)</strong>. Despídete de cuotas mensuales de 20 €/mes (ChatGPT Plus, Claude Pro) y obtén soberanía total sobre tus datos, herramientas y memoria conversacional.
+        </p>
+
+        <!-- ASCII Architecture Blueprint -->
+        <div class="ascii-box">
++-------------------------------------------------------------------------------------------------+
+|   CLIENT LAYER (Any Web Browser / Mobile Phone / Telegram / Hermes Desktop Native App)          |
++------------------------------------------------+------------------------------------------------+
+                                                 | HTTPS / WSS
+                                                 v
++------------------------------------------------+------------------------------------------------+
+|   RENDER.COM WEB SERVICE (Free Tier - 750h/mo - Port :10000)                                    |
+|   - Unified Reverse Proxy & TCP WebSocket Tunnel (deploy/server.py)                             |
+|     ├─ '/' & '/chat'                ──> Built-in Swiss Modernist Web Chat (chat.html)           |
+|     ├─ '/presentation'              ──> Interactive Slide Deck Presentation (presentation.html) |
+|     ├─ '/docs'                      ──> Master HTML Technical Documentation (docs/index.html)   |
+|     ├─ '/dashboard' & SPA Routes    ──> Official Hermes Web Dashboard (Port :9119)             |
+|     ├─ '/api/ws' & '/api/pty'       ──> Transparent Raw TCP WebSocket Tunnel (Terminal & TUI)   |
+|     └─ '/v1/*'                      ──> Hermes API Gateway (:8642) + OpenRouter Fallback Resil. |
+|   - Hermes Agent Runtime & Persistent Memory (:8642)                                            |
+|   - Official Hermes Web Dashboard (:9119)                                                       |
++------------------------------------------------+------------------------------------------------+
+                                                 | Upstream Inference API Calls
+                                                 v
++------------------------------------------------+------------------------------------------------+
+|   OPENROUTER.AI (Free Models Tier - :free)                                                      |
+|   - Meta Llama 3.3 70B Instruct (:free)                                                         |
+|   - Google Gemini 2.0 Flash Lite (:free)                                                        |
+|   - DeepSeek R1 Reasoning (:free)                                                               |
+|   - Qwen 2.5 Coder 32B (:free)                                                                  |
+|   - Auto Free Router (openrouter/free)                                                          |
++-------------------------------------------------------------------------------------------------+
+        </div>
+
+        <div class="grid-3">
+          <div class="box">
+            <div class="box-title"><span>💰</span> <span class="lang-en">COST: $0.00 / MO</span><span class="lang-es">COSTE: 0,00 € / MES</span></div>
+            <p class="box-desc lang-en">Runs permanently inside Render's 750 free monthly hours using OpenRouter's unlimited :free model pool. No credit card required.</p>
+            <p class="box-desc lang-es">Funciona indefinidamente con las 750 horas gratis de Render y los modelos :free de OpenRouter. Sin tarjeta bancaria.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>🧠</span> <span class="lang-en">PERSISTENT MEMORY</span><span class="lang-es">MEMORIA PERSISTENTE</span></div>
+            <p class="box-desc lang-en">Hermes Agent retains session history, builds new custom skills, executes automated routines, and interacts with tools.</p>
+            <p class="box-desc lang-es">Hermes Agent recuerda tus charlas, evoluciona destrezas, ejecuta rutinas automatizadas y se integra con herramientas externas.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>🎛</span> <span class="lang-en">FULL WEB DASHBOARD</span><span class="lang-es">DASHBOARD INTEGRADO</span></div>
+            <p class="box-desc lang-en">Integrated official Hermes Dashboard with live configuration editing, MCP servers, cron routines, logs, and embedded terminal PTY.</p>
+            <p class="box-desc lang-es">Panel oficial de Hermes con edición visual de config.yaml, servidores MCP, cron jobs, logs en vivo y emulador de consola PTY.</p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a href="/" class="btn-swiss primary">
+            <span>➔</span> <span class="lang-en">OPEN LIVE WEB CHAT</span><span class="lang-es">ABRIR CHAT EN VIVO</span>
+          </a>
+          <a href="/dashboard" class="btn-swiss lime">
+            <span>🎛</span> <span class="lang-en">OPEN WEB DASHBOARD</span><span class="lang-es">ABRIR PANEL DASHBOARD</span>
+          </a>
+          <a href="/presentation" class="btn-swiss">
+            <span>📽</span> <span class="lang-en">INTERACTIVE SLIDE DECK</span><span class="lang-es">PRESENTACIÓN EN DIAPOSITIVAS</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- PREREQUISITES -->
+      <section class="doc-card" id="prerequisites">
+        <div class="sec-tag">
+          <span class="lang-en">02 // PREREQUISITES</span>
+          <span class="lang-es">02 // REQUISITOS PREVIOS</span>
+        </div>
+
+        <h2 class="lang-en">What You Need (Zero Coding Knowledge Required)</h2>
+        <h2 class="lang-es">Qué Necesitas (No se requieren conocimientos previos)</h2>
+
+        <p class="lang-en">Everything in this guide is designed for any user to deploy their sovereign cloud AI in under 5 minutes without writing a single line of code:</p>
+        <p class="lang-es">Toda esta guía está pensada para que cualquier persona pueda desplegar su propia IA en la nube en menos de 5 minutos sin saber programar:</p>
+
+        <div class="grid-3">
+          <div class="box">
+            <div class="box-title"><span>1️⃣</span> OpenRouter</div>
+            <p class="box-desc lang-en">Free account to generate an API key with $0 balance. Access to top free open-source models.</p>
+            <p class="box-desc lang-es">Cuenta gratuita para crear una clave API sin saldo ni tarjeta. Acceso a modelos libres de primer nivel.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>2️⃣</span> Render.com</div>
+            <p class="box-desc lang-en">Free cloud platform to run our Docker container with zero server management.</p>
+            <p class="box-desc lang-es">Plataforma gratuita en la nube para ejecutar el contenedor Docker sin gestionar servidores.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>3️⃣</span> Telegram (Optional)</div>
+            <p class="box-desc lang-en">If you wish to chat with your agent via mobile voice notes, photos, and messages.</p>
+            <p class="box-desc lang-es">Si deseas interactuar con tu asistente mediante notas de voz, fotos y texto desde el móvil.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 1: OPENROUTER -->
+      <section class="doc-card" id="step-1">
+        <div class="sec-tag">
+          <span class="lang-en">03 // STEP 1: OPENROUTER API KEY</span>
+          <span class="lang-es">03 // PASO 1: CLAVE GRATUITA OPENROUTER</span>
+        </div>
+
+        <h2 class="lang-en">Step 1: Obtain Your Free OpenRouter Key</h2>
+        <h2 class="lang-es">Paso 1: Obtener tu Clave Gratuita de OpenRouter</h2>
+
+        <p class="lang-en">OpenRouter provides a universal API gateway giving free access to state-of-the-art models like Llama 3.3 70B and Gemini 2.0 Flash Lite without requesting credit cards or upfront balances.</p>
+        <p class="lang-es">OpenRouter ofrece una pasarela unificada con acceso gratuito a modelos punteros como Llama 3.3 70B y Gemini 2.0 Flash Lite sin requerir tarjeta bancaria ni saldo previo.</p>
+
+        <ol>
+          <li class="lang-en">Navigate to <a href="https://openrouter.ai/" target="_blank" rel="noopener" style="color:var(--accent);">openrouter.ai</a> and click <strong>Sign In</strong> (via Google or Email).</li>
+          <li class="lang-es">Entra en <a href="https://openrouter.ai/" target="_blank" rel="noopener" style="color:var(--accent);">openrouter.ai</a> y pulsa en <strong>Sign In</strong> (con cuenta de Google o correo).</li>
+          <li class="lang-en">Open the Keys dashboard at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--accent);">openrouter.ai/keys</a>.</li>
+          <li class="lang-es">Abre el panel de claves en <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--accent);">openrouter.ai/keys</a>.</li>
+          <li class="lang-en">Click <strong>Create Key</strong>. Provide a memorable label such as <code>Hermes Free Agent</code>, leave the credit limit blank, and click <strong>Create</strong>.</li>
+          <li class="lang-es">Haz clic en <strong>Create Key</strong>. Escribe un nombre como <code>Hermes Agente Gratis</code>, deja el límite de saldo en blanco y pulsa <strong>Create</strong>.</li>
+          <li class="lang-en">Copy your secret key formatted as <code>sk-or-v1-xxxxxxxxxxxxxxxxxxxx...</code>. Store it in a safe place.</li>
+          <li class="lang-es">Copia tu clave secreta con formato <code>sk-or-v1-xxxxxxxxxxxxxxxxxxxx...</code> y guárdala a mano.</li>
+        </ol>
+
+        <div class="callout lime">
+          <div class="callout-title"><span>💡</span> <span class="lang-en">IMPORTANT NOTE</span><span class="lang-es">AVISO IMPORTANTE</span></div>
+          <p class="lang-en" style="margin:0;">Your account balance will legitimately show <strong>$0.00</strong>. Models with the <code>:free</code> suffix do not consume funds or trigger payment walls.</p>
+          <p class="lang-es" style="margin:0;">Tu saldo mostrará legítimamente <strong>0,00 $</strong>. Los modelos que terminan con el sufijo <code>:free</code> nunca consumen saldo ni solicitan pagos.</p>
+        </div>
+      </section>
+
+      <!-- STEP 2: TELEGRAM BOT -->
+      <section class="doc-card" id="step-2">
+        <div class="sec-tag">
+          <span class="lang-en">04 // STEP 2: TELEGRAM BOT (OPTIONAL)</span>
+          <span class="lang-es">04 // PASO 2: BOT DE TELEGRAM (OPCIONAL)</span>
+        </div>
+
+        <h2 class="lang-en">Step 2: Private Telegram Bot Setup</h2>
+        <h2 class="lang-es">Paso 2: Configurar tu Bot Privado en Telegram</h2>
+
+        <p class="lang-en">Interact with your personal AI on WhatsApp-like speed directly from Telegram on iOS, Android, macOS, or PC:</p>
+        <p class="lang-es">Habla con tu asistente con la inmediatez de una app de mensajería desde Telegram en móvil o escritorio:</p>
+
+        <ol>
+          <li class="lang-en">Open Telegram, search for <strong><code>@BotFather</code></strong> (look for the verified blue badge), and send <code>/newbot</code>.</li>
+          <li class="lang-es">Abre Telegram, busca <strong><code>@BotFather</code></strong> (con la marca azul verificada) y envía el comando <code>/newbot</code>.</li>
+          <li class="lang-en">Assign a display name (e.g. <code>My Hermes AI</code>) and a bot username ending in <code>bot</code> (e.g. <code>my_hermes_2026_bot</code>).</li>
+          <li class="lang-es">Asigna un nombre visible (ej. <code>Mi Hermes IA</code>) y un usuario único que acabe en <code>bot</code> (ej. <code>mi_hermes_2026_bot</code>).</li>
+          <li class="lang-en">BotFather will grant you an <strong>HTTP API Token</strong> (e.g. <code>7123456789:AAH...</code>). Save it.</li>
+          <li class="lang-es">BotFather te devolverá el <strong>HTTP API Token</strong> (ej. <code>7123456789:AAH...</code>). Guárdalo.</li>
+          <li class="lang-en">Search for <strong><code>@userinfobot</code></strong> in Telegram, press Start, and note your numeric <strong>Id</strong>. This ensures strictly you (and nobody else) can message your bot.</li>
+          <li class="lang-es">Busca <strong><code>@userinfobot</code></strong> en Telegram, pulsa Iniciar y copia tu número de <strong>Id</strong>. Esto garantizará que nadie más pueda usar tu bot.</li>
+        </ol>
+      </section>
+
+      <!-- STEP 3: RENDER CLOUD DEPLOY -->
+      <section class="doc-card" id="step-3">
+        <div class="sec-tag">
+          <span class="lang-en">05 // STEP 3: RENDER CLOUD DEPLOYMENT</span>
+          <span class="lang-es">05 // PASO 3: DESPLIEGUE EN LA NUBE CON RENDER</span>
+        </div>
+
+        <h2 class="lang-en">Step 3: One-Click Deployment on Render.com</h2>
+        <h2 class="lang-es">Paso 3: Despliegue en la Nube con Render.com</h2>
+
+        <p class="lang-en">Render provides 750 hours of free computing each month, allowing your instance to run 24/7 without incurring charges.</p>
+        <p class="lang-es">Render incluye 750 horas gratuitas de computación al mes, permitiendo que tu servidor funcione 24/7 sin ningún coste.</p>
+
+        <h3 class="lang-en">Option A: Deploy via GitHub (Recommended — Auto-Detects Root Dockerfile)</h3>
+        <h3 class="lang-es">Opción A: Despliegue mediante GitHub (Recomendado — Detecta el Dockerfile raíz)</h3>
+
+        <ol>
+          <li class="lang-en">Fork or push this repository to your GitHub account: <a href="https://github.com/thurtado1993/hermes-agent-render" target="_blank" rel="noopener" style="color:var(--accent);">github.com/thurtado1993/hermes-agent-render</a>.</li>
+          <li class="lang-es">Haz un fork o sube este repositorio a tu cuenta de GitHub: <a href="https://github.com/thurtado1993/hermes-agent-render" target="_blank" rel="noopener" style="color:var(--accent);">github.com/thurtado1993/hermes-agent-render</a>.</li>
+          <li class="lang-en">Sign in to <a href="https://render.com/" target="_blank" rel="noopener" style="color:var(--accent);">render.com</a>, click <strong>+ New</strong> ➔ <strong>Web Service</strong>.</li>
+          <li class="lang-es">Entra en <a href="https://render.com/" target="_blank" rel="noopener" style="color:var(--accent);">render.com</a>, pulsa en <strong>+ New</strong> ➔ <strong>Web Service</strong>.</li>
+          <li class="lang-en">Connect your GitHub repository.</li>
+          <li class="lang-es">Conecta tu repositorio de GitHub.</li>
+          <li class="lang-en">Configure settings:
+            <ul>
+              <li><strong>Name</strong>: <code>hermes-agent-free</code></li>
+              <li><strong>Region</strong>: Frankfurt (EU) or Oregon/Ohio (US)</li>
+              <li><strong>Branch</strong>: <code>main</code></li>
+              <li><strong>Runtime</strong>: <code>Docker</code> (Render detects the root <code>./Dockerfile</code> automatically)</li>
+              <li><strong>Instance Type</strong>: <strong>Free ($0/month)</strong></li>
+            </ul>
+          </li>
+          <li class="lang-es">Configura los parámetros:
+            <ul>
+              <li><strong>Name</strong>: <code>hermes-agent-free</code></li>
+              <li><strong>Region</strong>: Frankfurt (Europa) u Oregon/Ohio (EE. UU.)</li>
+              <li><strong>Branch</strong>: <code>main</code></li>
+              <li><strong>Runtime</strong>: <code>Docker</code> (Render detecta automáticamente el <code>Dockerfile</code> de la raíz)</li>
+              <li><strong>Instance Type</strong>: <strong>Free (0 $/mes)</strong></li>
+            </ul>
+          </li>
+        </ol>
+
+        <h3 class="lang-en">Complete Environment Variables Reference</h3>
+        <h3 class="lang-es">Tabla Completa de Variables de Entorno</h3>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th><span class="lang-en">VARIABLE KEY</span><span class="lang-es">VARIABLE</span></th>
+                <th><span class="lang-en">RECOMMENDED VALUE</span><span class="lang-es">VALOR RECOMENDADO</span></th>
+                <th><span class="lang-en">DESCRIPTION & PURPOSE</span><span class="lang-es">DESCRIPCIÓN Y FUNCIÓN</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>OPENROUTER_API_KEY</code></td>
+                <td><code>sk-or-v1-...</code></td>
+                <td><span class="lang-en">Your secret OpenRouter API key from Step 1.</span><span class="lang-es">Tu clave secreta de OpenRouter obtenida en el Paso 1.</span></td>
+              </tr>
+              <tr>
+                <td><code>MODEL_NAME</code></td>
+                <td><code>meta-llama/llama-3.3-70b-instruct:free</code></td>
+                <td><span class="lang-en">Default AI model for the agent. Any <code>:free</code> model is supported.</span><span class="lang-es">Modelo por defecto. Admite cualquier modelo <code>:free</code> de OpenRouter.</span></td>
+              </tr>
+              <tr>
+                <td><code>PORT</code></td>
+                <td><code>10000</code></td>
+                <td><span class="lang-en">Public port expected by the Render router.</span><span class="lang-es">Puerto público asignado por el router de Render.</span></td>
+              </tr>
+              <tr>
+                <td><code>API_SERVER_KEY</code></td>
+                <td><code>clave_secreta_hermes_2026</code></td>
+                <td><span class="lang-en">Bearer authentication key protecting the API and web chat consoles.</span><span class="lang-es">Contraseña que protege el acceso a las interfaces web y al gateway.</span></td>
+              </tr>
+              <tr>
+                <td><code>TELEGRAM_BOT_TOKEN</code></td>
+                <td><code>7123456789:AAH...</code></td>
+                <td><span class="lang-en">(Optional) Enables mobile chat via your Telegram Bot.</span><span class="lang-es">(Opcional) Token para habilitar el bot móvil de Telegram.</span></td>
+              </tr>
+              <tr>
+                <td><code>TELEGRAM_ALLOWED_USERS</code></td>
+                <td><code>123456789</code></td>
+                <td><span class="lang-en">(Optional) Your numeric Telegram user ID to block unauthorized access.</span><span class="lang-es">(Opcional) Tu ID numérico para bloquear accesos de terceros al bot.</span></td>
+              </tr>
+              <tr>
+                <td><code>HERMES_DASHBOARD_BASIC_AUTH_USERNAME</code></td>
+                <td><code>admin</code></td>
+                <td><span class="lang-en">(Optional) Username for HTTP Basic Auth on <code>/dashboard</code>.</span><span class="lang-es">(Opcional) Usuario para autenticación básica en el dashboard web.</span></td>
+              </tr>
+              <tr>
+                <td><code>HERMES_DASHBOARD_BASIC_AUTH_PASSWORD</code></td>
+                <td><code>hermes_admin_pass</code></td>
+                <td><span class="lang-en">(Optional) Password for HTTP Basic Auth on <code>/dashboard</code>.</span><span class="lang-es">(Opcional) Contraseña para autenticación en el dashboard web.</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="lang-en">Click <strong>Create Web Service</strong>. In 2–3 minutes, Render will build your Docker image and turn the status badge green (<strong>Live</strong>).</p>
+        <p class="lang-es">Haz clic en <strong>Create Web Service</strong>. En unos 2–3 minutos, Render compilará el contenedor y activará la etiqueta verde (<strong>Live</strong>).</p>
+      </section>
+
+      <!-- STEP 4: ON-SERVER WEB CHAT -->
+      <section class="doc-card" id="step-4">
+        <div class="sec-tag">
+          <span class="lang-en">06 // STEP 4: ON-SERVER WEB CHAT</span>
+          <span class="lang-es">06 // PASO 4: CHAT WEB EN EL SERVIDOR</span>
+        </div>
+
+        <h2 class="lang-en">Step 4: Using the Built-In Swiss Modernist Web Chat (`chat.html`)</h2>
+        <h2 class="lang-es">Paso 4: Usar la Consola Web Modernista en el Servidor (`chat.html`)</h2>
+
+        <p class="lang-en">Your deployment includes an ultra-fast, single-page chat console hosted directly on your Render domain with zero CORS complications:</p>
+        <p class="lang-es">Tu despliegue incluye una consola web de chat ultra rápida alojada directamente en tu dominio de Render sin problemas de CORS:</p>
+
+        <ol>
+          <li class="lang-en">Open your browser on any laptop, tablet, or phone and navigate to: <code>https://hermes-agent-render-a9ab.onrender.com</code>.</li>
+          <li class="lang-es">Abre tu navegador en cualquier ordenador, tablet o móvil y entra en: <code>https://hermes-agent-render-a9ab.onrender.com</code>.</li>
+          <li class="lang-en">The Swiss Modernist chat interface loads immediately.</li>
+          <li class="lang-es">La consola modernista cargará al instante directamente desde tu servidor.</li>
+          <li class="lang-en">Enter your <code>API_SERVER_KEY</code> once when prompted.</li>
+          <li class="lang-es">Introduce tu <code>API_SERVER_KEY</code> una sola vez en la ventana de bienvenida.</li>
+        </ol>
+
+        <div class="grid-2">
+          <div class="box">
+            <div class="box-title"><span>⚡</span> <span class="lang-en">DYNAMIC FREE MODELS SELECTOR</span><span class="lang-es">SELECTOR DINÁMICO DE MODELOS</span></div>
+            <p class="box-desc lang-en">Automatically queries OpenRouter's live API to populate healthy free-tier models (:free) from Google, Meta, DeepSeek, and Qwen, falling back safely to Auto Free Router.</p>
+            <p class="box-desc lang-es">Consulta automáticamente la API de OpenRouter para ofrecer en tiempo real los modelos gratuitos activos de Google, Meta, DeepSeek y Qwen, con respaldo en Auto Free Router.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>💾</span> <span class="lang-en">MULTI-SESSION PERSISTENCE</span><span class="lang-es">PERSISTENCIA MULTI-SESIÓN</span></div>
+            <p class="box-desc lang-en">Zero data loss on page refresh. Full chat history, multi-session switcher, message search, and export options saved locally.</p>
+            <p class="box-desc lang-es">Cero pérdidas al recargar la página. Historial multi-sesión con buscador, selector de conversaciones y guardado automático en local.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: REMOTE CLIENTS -->
+      <section class="doc-card" id="step-5">
+        <div class="sec-tag">
+          <span class="lang-en">07 // STEP 5: REMOTE WEB CLIENTS</span>
+          <span class="lang-es">07 // PASO 5: CLIENTES WEB AUTÓNOMOS</span>
+        </div>
+
+        <h2 class="lang-en">Step 5: Standalone Clients (`chat_web.html` & NextChat)</h2>
+        <h2 class="lang-es">Paso 5: Clientes Autónomos (`chat_web.html` y NextChat)</h2>
+
+        <h3 class="lang-en">1. Standalone Offline Client (`web/chat_web.html`)</h3>
+        <h3 class="lang-es">1. Cliente Autónomo en Fichero Local (`web/chat_web.html`)</h3>
+        <p class="lang-en">Double click the standalone <code>web/chat_web.html</code> file on any computer. In the settings drawer, enter your Render URL (<code>https://hermes-agent-render-a9ab.onrender.com</code>) and your <code>API_SERVER_KEY</code>. You can chat completely offline-first.</p>
+        <p class="lang-es">Haz doble clic sobre el archivo autónomo <code>web/chat_web.html</code> en cualquier ordenador. En el menú de ajustes, pon la URL de tu Render (<code>https://hermes-agent-render-a9ab.onrender.com</code>) y tu <code>API_SERVER_KEY</code> para chatear en remoto.</p>
+
+        <h3 class="lang-en">2. Third-Party OpenAI-Compatible Apps (NextChat, LibreChat)</h3>
+        <h3 class="lang-es">2. Clientes Compatibles con OpenAI (NextChat, LibreChat)</h3>
+        <p class="lang-en">Because Hermes Agent implements the standard OpenAI v1 specification, any client can connect to your server:</p>
+        <p class="lang-es">Dado que Hermes implementa el estándar OpenAI v1, cualquier cliente web o de escritorio puede conectarse a tu servidor:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>NEXTCHAT / OPENAI CLIENT CONFIGURATION</span>
+            <button class="copy-btn" onclick="copySnippet('Endpoint: https://hermes-agent-render-a9ab.onrender.com/v1\nAPI Key: tu_clave_secreta')">COPY</button>
+          </div>
+          <pre><code>Endpoint: https://hermes-agent-render-a9ab.onrender.com/v1
+API Key:  [Your API_SERVER_KEY]
+Model:    meta-llama/llama-3.3-70b-instruct:free (or openrouter/free)</code></pre>
+        </div>
+      </section>
+
+      <!-- STEP 6: HERMES WEB DASHBOARD -->
+      <section class="doc-card" id="step-6">
+        <div class="sec-tag">
+          <span class="lang-en">08 // STEP 6: HERMES WEB DASHBOARD</span>
+          <span class="lang-es">08 // PASO 6: PANEL HERMES WEB DASHBOARD</span>
+        </div>
+
+        <h2 class="lang-en">Step 6: Hermes Web Dashboard (`/dashboard`)</h2>
+        <h2 class="lang-es">Paso 6: Panel de Control Oficial de Hermes (`/dashboard`)</h2>
+
+        <p class="lang-en">
+          The official <strong>Hermes Web Dashboard</strong> runs internally on port <code>9119</code> and is reverse-proxied transparently by <code>deploy/server.py</code> with full TCP WebSocket and PTY terminal support. It provides advanced users with total visual control over the agent's configuration, toolsets, and processes.
+        </p>
+        <p class="lang-es">
+          El panel oficial <strong>Hermes Web Dashboard</strong> se ejecuta internamente en el puerto <code>9119</code> y es expuesto fluidamente por el servidor proxy inverso con soporte completo de WebSockets TCP y terminal PTY emulada. Ofrece a los usuarios avanzados un control visual total sobre la configuración, herramientas y procesos del agente.
+        </p>
+
+        <div class="action-row">
+          <a href="/dashboard" class="btn-swiss lime">
+            <span>🎛</span> <span class="lang-en">LAUNCH LIVE DASHBOARD</span><span class="lang-es">ABRIR DASHBOARD EN VIVO</span>
+          </a>
+        </div>
+
+        <h3 class="lang-en">14 Visual Management Modules</h3>
+        <h3 class="lang-es">14 Paneles de Gestión Visual</h3>
+
+        <div class="grid-3">
+          <div class="box">
+            <div class="box-title"><span>⚙️</span> <span class="lang-en">CONFIG EDITOR</span><span class="lang-es">CONFIGURACIÓN</span></div>
+            <p class="box-desc lang-en">Inspect and edit <code>config.yaml</code> visually. Alter system prompts, model providers, and tool permissions.</p>
+            <p class="box-desc lang-es">Inspecciona y edita <code>config.yaml</code>. Modifica prompts de sistema, proveedores y permisos de herramientas.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>⚡</span> <span class="lang-en">SKILLS HUB</span><span class="lang-es">DESTREZAS (SKILLS)</span></div>
+            <p class="box-desc lang-en">Browse installed skills, enable/disable abilities, and author new custom agent skill manifests.</p>
+            <p class="box-desc lang-es">Explora habilidades instaladas, activa o desactiva capacidades y crea nuevas destrezas personalizadas.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>🔌</span> <span class="lang-en">MCP SERVERS</span><span class="lang-es">SERVIDORES MCP</span></div>
+            <p class="box-desc lang-en">Integrate Model Context Protocol tools for filesystem, database, code analysis, and external APIs.</p>
+            <p class="box-desc lang-es">Integra herramientas del Model Context Protocol (MCP) para ficheros, bases de datos y APIs externas.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>⏱</span> <span class="lang-en">CRON & SCHEDULES</span><span class="lang-es">TAREAS PROGRAMADAS</span></div>
+            <p class="box-desc lang-en">Schedule autonomous recurring routines, automated reminders, and scheduled agent tasks.</p>
+            <p class="box-desc lang-es">Programa tareas recurrentes automáticas, recordatorios periódicos y flujos autónomos.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>📜</span> <span class="lang-en">REAL-TIME LOGS</span><span class="lang-es">REGISTROS EN VIVO</span></div>
+            <p class="box-desc lang-en">Stream live execution traces, tool call arguments, token metrics, and debug messages.</p>
+            <p class="box-desc lang-es">Monitorea en tiempo real trazas de ejecución, argumentos de herramientas y mensajes de depuración.</p>
+          </div>
+          <div class="box">
+            <div class="box-title"><span>💻</span> <span class="lang-en">BROWSER TERMINAL (PTY)</span><span class="lang-es">TERMINAL WEB (PTY)</span></div>
+            <p class="box-desc lang-en">Full interactive shell access inside the Render container via xterm.js over WebSocket tunnel (<code>/api/pty</code>).</p>
+            <p class="box-desc lang-es">Consola interactiva dentro del contenedor mediante xterm.js sobre el túnel de WebSocket (<code>/api/pty</code>).</p>
+          </div>
+        </div>
+
+        <h3 class="lang-en">Connecting the Native Hermes Desktop Application</h3>
+        <h3 class="lang-es">Conexión con la App Nativa Hermes Desktop</h3>
+        <p class="lang-en">If you prefer running the official Hermes Desktop app on macOS, Windows, or Linux:</p>
+        <p class="lang-es">Si utilizas la aplicación de escritorio oficial Hermes Desktop en tu PC o Mac:</p>
+        <ol>
+          <li class="lang-en">Open Hermes Desktop ➔ Settings ➔ <strong>Connection</strong>.</li>
+          <li class="lang-es">Abre Hermes Desktop ➔ Settings ➔ <strong>Connection</strong>.</li>
+          <li class="lang-en">Select <strong>Remote Server</strong>.</li>
+          <li class="lang-es">Selecciona <strong>Remote Server</strong>.</li>
+          <li class="lang-en">Set Server URL: <code>https://hermes-agent-render-a9ab.onrender.com</code>.</li>
+          <li class="lang-es">Indica como Server URL: <code>https://hermes-agent-render-a9ab.onrender.com</code>.</li>
+          <li class="lang-en">Enter your <code>API_SERVER_KEY</code>. The desktop app connects seamlessly via the <code>/api/ws</code> tunnel.</li>
+          <li class="lang-es">Introduce tu <code>API_SERVER_KEY</code>. La aplicación se comunicará directamente a través del túnel <code>/api/ws</code>.</li>
+        </ol>
+      </section>
+
+      <!-- FREE MODELS CATALOG -->
+      <section class="doc-card" id="models">
+        <div class="sec-tag">
+          <span class="lang-en">09 // FREE MODELS CATALOG</span>
+          <span class="lang-es">09 // CATÁLOGO DE MODELOS GRATUITOS</span>
+        </div>
+
+        <h2 class="lang-en">OpenRouter Free Models Catalog (`:free`)</h2>
+        <h2 class="lang-es">Catálogo de Modelos Gratuitos de OpenRouter (`:free`)</h2>
+
+        <p class="lang-en">All models listed below operate with <strong>$0.00 cost forever</strong> on OpenRouter:</p>
+        <p class="lang-es">Todos los modelos siguientes funcionan con <strong>coste cero de por vida</strong> en OpenRouter:</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th><span class="lang-en">MODEL IDENTIFIER</span><span class="lang-es">MODELO</span></th>
+                <th><span class="lang-en">PARAMETERS & SPECIALTY</span><span class="lang-es">ESPECIALIDAD</span></th>
+                <th><span class="lang-en">BEST USE CASE</span><span class="lang-es">MEJOR CASO DE USO</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>meta-llama/llama-3.3-70b-instruct:free</code></td>
+                <td><span class="lang-en">70B All-Rounder Flagship</span><span class="lang-es">70B Parámetros Todoterreno</span></td>
+                <td><span class="lang-en">Exceptional reasoning, creative writing, nuanced Spanish and English comprehension.</span><span class="lang-es">Razonamiento profundo, redacción creativa y excelente comprensión en español.</span></td>
+              </tr>
+              <tr>
+                <td><code>google/gemini-2.0-flash-lite:free</code></td>
+                <td><span class="lang-en">Sub-second Latency & Big Context</span><span class="lang-es">Máxima Velocidad y Contexto</span></td>
+                <td><span class="lang-en">Ultra-fast responses, processing large documents, quick tool calls and data parsing.</span><span class="lang-es">Respuestas inmediatas, análisis de documentos largos y llamadas veloces a herramientas.</span></td>
+              </tr>
+              <tr>
+                <td><code>deepseek/deepseek-r1:free</code></td>
+                <td><span class="lang-en">Chain-of-Thought Reasoning</span><span class="lang-es">Razonamiento Lógico Reflexivo</span></td>
+                <td><span class="lang-en">Complex scientific deduction, mathematical puzzles, algorithmic proofs.</span><span class="lang-es">Problemas matemáticos complejos, deducción científica y lógica reflexiva paso a paso.</span></td>
+              </tr>
+              <tr>
+                <td><code>qwen/qwen-2.5-coder-32b-instruct:free</code></td>
+                <td><span class="lang-en">32B Coding Specialist</span><span class="lang-es">32B Especialista en Código</span></td>
+                <td><span class="lang-en">Code writing, refactoring, bug fixing in Python, JS, TypeScript, Bash, Rust, Go.</span><span class="lang-es">Generación y depuración de código en Python, JavaScript, Bash, SQL y arquitectura web.</span></td>
+              </tr>
+              <tr>
+                <td><code>openrouter/free</code></td>
+                <td><span class="lang-en">Smart Auto Router</span><span class="lang-es">Enrutador Inteligente Automático</span></td>
+                <td><span class="lang-en">Dynamically picks the healthiest, fastest free model available in real-time.</span><span class="lang-es">Selecciona dinámicamente el modelo gratuito más rápido y disponible en tiempo real.</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 24/7 KEEP ALIVE -->
+      <section class="doc-card" id="keepalive">
+        <div class="sec-tag">
+          <span class="lang-en">10 // 24/7 KEEP-ALIVE STRATEGY</span>
+          <span class="lang-es">10 // ESTRATEGIA KEEP-ALIVE 24/7</span>
+        </div>
+
+        <h2 class="lang-en">How to Keep Your Free Render Server Awake 24/7</h2>
+        <h2 class="lang-es">Cómo Mantener tu Servidor de Render Despierto 24/7</h2>
+
+        <p class="lang-en">Render's free tier spins down web instances after 15 minutes of inactivity. When a new request arrives, a cold start takes ~30 seconds. To eliminate cold starts completely and make your AI instantly responsive 24 hours a day:</p>
+        <p class="lang-es">El plan gratuito de Render suspende los contenedores tras 15 minutos sin peticiones. La siguiente llamada experimenta un arranque en frío de ~30 segundos. Para eliminarlo y tener respuestas instantáneas 24 horas al día:</p>
+
+        <ol>
+          <li class="lang-en">Copy your public Render URL: <code>https://hermes-agent-render-a9ab.onrender.com</code>.</li>
+          <li class="lang-es">Copia la URL pública de tu Render: <code>https://hermes-agent-render-a9ab.onrender.com</code>.</li>
+          <li class="lang-en">Sign up for free at <a href="https://cron-job.org/" target="_blank" rel="noopener" style="color:var(--accent);">cron-job.org</a> or <a href="https://uptimerobot.com/" target="_blank" rel="noopener" style="color:var(--accent);">uptimerobot.com</a>.</li>
+          <li class="lang-es">Crea una cuenta gratuita en <a href="https://cron-job.org/" target="_blank" rel="noopener" style="color:var(--accent);">cron-job.org</a> o <a href="https://uptimerobot.com/" target="_blank" rel="noopener" style="color:var(--accent);">uptimerobot.com</a>.</li>
+          <li class="lang-en">Create a recurring HTTP GET request pointing to your URL (or <code>/healthz</code>) every <strong>10 minutes</strong>.</li>
+          <li class="lang-es">Programa una petición HTTP GET recurrente a tu URL (o a <code>/healthz</code>) cada <strong>10 minutos</strong>.</li>
+          <li class="lang-en">Render counts each ping as active traffic, keeping your container permanently warm!</li>
+          <li class="lang-es">Render detectará la petición como tráfico activo y tu contenedor se mantendrá despierto permanentemente.</li>
+        </ol>
+      </section>
+
+      <!-- TROUBLESHOOTING -->
+      <section class="doc-card" id="troubleshooting">
+        <div class="sec-tag">
+          <span class="lang-en">11 // TROUBLESHOOTING & FAQ</span>
+          <span class="lang-es">11 // PREGUNTAS FRECUENTES Y DIAGNÓSTICO</span>
+        </div>
+
+        <h2 class="lang-en">Troubleshooting & Frequently Asked Questions</h2>
+        <h2 class="lang-es">Resolución de Problemas y Preguntas Frecuentes</h2>
+
+        <div class="box" style="margin-bottom:1rem;">
+          <div class="box-title">❓ <span class="lang-en">Why did the first message take 35 seconds to respond?</span><span class="lang-es">¿Por qué mi primer mensaje tardó 35 segundos en responder?</span></div>
+          <p class="box-desc lang-en">The Render free instance was asleep. Once awake, subsequent messages reply in 1–2 seconds. Set up the 10-minute cron-job described above to eliminate sleep mode.</p>
+          <p class="box-desc lang-es">El contenedor estaba suspendido por inactividad. Una vez iniciado, responderá en 1–2 segundos. Configura el ping de 10 minutos de la sección anterior para evitar que se duerma.</p>
+        </div>
+
+        <div class="box" style="margin-bottom:1rem;">
+          <div class="box-title">❓ <span class="lang-en">Telegram bot doesn't reply to my messages?</span><span class="lang-es">¿El bot de Telegram no responde mis mensajes?</span></div>
+          <p class="box-desc lang-en">Ensure that <code>TELEGRAM_ALLOWED_USERS</code> in Render Environment Variables exactly matches the numeric ID you obtained from <code>@userinfobot</code>.</p>
+          <p class="box-desc lang-es">Verifica que la variable <code>TELEGRAM_ALLOWED_USERS</code> en Render coincide exactamente con el ID numérico que te dio <code>@userinfobot</code>.</p>
+        </div>
+
+        <div class="box">
+          <div class="box-title">❓ <span class="lang-en">Can anyone else access my private Hermes Agent?</span><span class="lang-es">¿Puede otra persona acceder a mi servidor o a mi chat?</span></div>
+          <p class="box-desc lang-en">No. The web chat and API endpoints strictly demand your secret <code>API_SERVER_KEY</code>, and Telegram enforces your individual numeric user ID.</p>
+          <p class="box-desc lang-es">No. El chat web y los endpoints API exigen tu clave secreta <code>API_SERVER_KEY</code>, y Telegram bloquea cualquier mensaje de un usuario distinto a tu ID.</p>
+        </div>
+      </section>
+
+      <!-- CONFIG FILES & DOWNLOADS -->
+      <section class="doc-card" id="downloads">
+        <div class="sec-tag">
+          <span class="lang-en">12 // CONFIGURATION REPOSITORY & DOWNLOADS</span>
+          <span class="lang-es">12 // FICHEROS Y DESCARGAS RÁPIDAS</span>
+        </div>
+
+        <h2 class="lang-en">One-Click Configuration Downloads</h2>
+        <h2 class="lang-es">Descarga Directa de Archivos de Configuración</h2>
+
+        <p class="lang-en">Download essential deployment blueprints and configuration files with one click:</p>
+        <p class="lang-es">Descarga los archivos clave de despliegue y plantillas con un solo clic:</p>
+
+        <div class="action-row">
+          <button class="btn-swiss" onclick="downloadFile('render.yaml')">
+            <span>💾</span> render.yaml
+          </button>
+          <button class="btn-swiss" onclick="downloadFile('docker-compose.yml')">
+            <span>💾</span> docker-compose.yml
+          </button>
+          <button class="btn-swiss" onclick="downloadFile('.env.example')">
+            <span>💾</span> .env.example
+          </button>
+          <button class="btn-swiss" onclick="downloadFile('chat.html')">
+            <span>💾</span> chat.html
+          </button>
+          <button class="btn-swiss" onclick="downloadFile('chat_web.html')">
+            <span>💾</span> chat_web.html
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-left">
+      <div class="brand-mark">
+        <span class="dot"></span>
+        HERMES AGENT // SOVEREIGN AI SYSTEM
+      </div>
+      <div class="footer-text">
+        <span class="lang-en">Open-Source Project under MIT License. Powered by Nous Research & OpenRouter.</span>
+        <span class="lang-es">Proyecto de Código Abierto bajo Licencia MIT. Desarrollado por Nous Research y OpenRouter.</span>
+      </div>
+    </div>
+    <div>
+      <a href="https://hermes-agent-render-a9ab.onrender.com" class="nav-btn accent">
+        <span class="lang-en">GO TO LIVE APPLICATION</span>
+        <span class="lang-es">IR A LA APLICACIÓN EN VIVO</span>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Language State & Switcher
+    let currentLang = localStorage.getItem('hermes_doc_lang') || 'es';
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.body.classList.remove('lang-en', 'lang-es');
+      document.body.classList.add('lang-' + lang);
+
+      const btnEn = document.getElementById('btn-en');
+      const btnEs = document.getElementById('btn-es');
+      if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+      if (btnEs) btnEs.classList.toggle('active', lang === 'es');
+
+      localStorage.setItem('hermes_doc_lang', lang);
+    }
+
+    // Initialize Lang
+    setLang(currentLang);
+
+    // Active Sidebar Spy on Scroll
+    const sections = document.querySelectorAll('section.doc-card');
+    const navLinks = document.querySelectorAll('.nav-list a');
+
+    window.addEventListener('scroll', () => {
+      let currentSec = '';
+      sections.forEach(sec => {
+        const secTop = sec.offsetTop - 120;
+        if (window.pageYOffset >= secTop) {
+          currentSec = sec.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSec) {
+          link.classList.add('active');
+        }
+      });
+    }, { passive: true });
+
+    // Copy Snippet Helper
+    function copySnippet(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert(currentLang === 'en' ? `Copied to clipboard:\n${text}` : `Copiado al portapapeles:\n${text}`);
+      });
+    }
+
+    // Embedded File Content for One-Click Downloads
+    const filePayloads = {
+      'render.yaml': `services:
+  - type: web
+    name: hermes-agent-free
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: meta-llama/llama-3.3-70b-instruct:free
+      - key: PORT
+        value: "10000"
+      - key: API_SERVER_KEY
+        generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_ALLOWED_USERS
+        sync: false`,
+
+      'docker-compose.yml': `version: "3.8"
+services:
+  hermes:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: hermes-agent
+    restart: unless-stopped
+    ports:
+      - "10000:10000"
+    environment:
+      - OPENROUTER_API_KEY=\${OPENROUTER_API_KEY}
+      - MODEL_NAME=\${MODEL_NAME:-meta-llama/llama-3.3-70b-instruct:free}
+      - PORT=10000
+      - API_SERVER_KEY=\${API_SERVER_KEY:-secret_hermes_password_2026}
+      - TELEGRAM_BOT_TOKEN=\${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_ALLOWED_USERS=\${TELEGRAM_ALLOWED_USERS:-}
+    volumes:
+      - hermes_data:/opt/data
+
+volumes:
+  hermes_data:`,
+
+      '.env.example': `# OPENROUTER KEY
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# MODEL
+MODEL_NAME=meta-llama/llama-3.3-70b-instruct:free
+
+# SERVER
+PORT=10000
+API_SERVER_ENABLED=true
+API_SERVER_PORT=10000
+API_SERVER_KEY=clave_secreta_hermes_2026
+
+# TELEGRAM (OPTIONAL)
+TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrSTUvwxyz
+TELEGRAM_ALLOWED_USERS=123456789`
+    };
+
+    function downloadFile(filename) {
+      if (filename === 'chat.html' || filename === 'chat_web.html') {
+        window.open('/' + filename, '_blank');
+        return;
+      }
+
+      const content = filePayloads[filename];
+      if (!content) {
+        alert('File not found');
+        return;
+      }
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

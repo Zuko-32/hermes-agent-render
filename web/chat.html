@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HERMES CHAT // ON-SERVER WEB CONSOLE</title>
+
+  <!-- Precision Typography inspired by seunghyuk.com -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090e;
+      --bg-surface: #0b0f19;
+      --bg-card: rgba(14, 19, 30, 0.85);
+      --border: rgba(255, 255, 255, 0.12);
+      --border-strong: rgba(255, 255, 255, 0.28);
+      --text: #f4f4f6;
+      --text-muted: #8e95a5;
+      --accent: #00f0ff;
+      --accent-dim: rgba(0, 240, 255, 0.12);
+      --lime: #c6f135;
+      --danger: #ff3366;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', -apple-system, sans-serif;
+      --display: 'Syne', 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      -webkit-font-smoothing: antialiased;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* App Layout */
+    .app-layout {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      max-height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Sidebar / Session Drawer */
+    aside {
+      width: 320px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 40;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .rack-header {
+      padding: 1.15rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(7, 9, 14, 0.95);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-mark {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #fff;
+    }
+
+    .brand-mark .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--lime);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--lime);
+      display: inline-block;
+    }
+
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.45rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .sidebar-actions {
+      padding: 1rem 1.25rem 0.5rem 1.25rem;
+    }
+
+    .btn-new-chat {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      background: var(--accent);
+      color: #000;
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+    }
+
+    .btn-new-chat:hover {
+      background: #fff;
+      border-color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Tabs */
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      margin: 0.5rem 1.25rem 0 1.25rem;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.6rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(0, 240, 255, 0.04);
+    }
+
+    /* Tab Panes */
+    .tab-pane {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    .tab-pane.active {
+      display: flex;
+    }
+
+    /* Session List */
+    .session-list {
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .session-item {
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.02);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .session-item:hover {
+      background: rgba(0, 240, 255, 0.04);
+      border-color: rgba(0, 240, 255, 0.3);
+      transform: translateX(2px);
+    }
+
+    .session-item.active {
+      background: rgba(0, 240, 255, 0.08);
+      border-color: var(--accent);
+      border-left: 3px solid var(--accent);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.12);
+    }
+
+    .session-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .session-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .session-item.active .session-title {
+      color: #fff;
+    }
+
+    .session-meta {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-delete-session {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      font-size: 0.75rem;
+      border-radius: 2px;
+      opacity: 0.5;
+      transition: all 0.2s;
+    }
+
+    .session-item:hover .btn-delete-session {
+      opacity: 1;
+    }
+
+    .btn-delete-session:hover {
+      color: var(--danger);
+      background: rgba(255, 51, 102, 0.15);
+    }
+
+    .empty-sessions {
+      padding: 2.5rem 1rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .session-footer-actions {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Settings Tab Content */
+    .settings-pane {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .sec-index {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .sec-index::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field-group label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .field-input, .field-select {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .field-input:focus, .field-select:focus {
+      border-color: var(--accent);
+      background: rgba(0, 240, 255, 0.02);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+    }
+
+    .field-select {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 11px;
+      padding-right: 2rem;
+    }
+
+    .field-select option, .field-select optgroup {
+      background-color: #0b101b !important;
+      color: #f4f4f6 !important;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+
+    .health-rack {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.01);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+    }
+
+    .health-status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--lime);
+      font-weight: 700;
+    }
+
+    .rack-footer {
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      background: rgba(7, 9, 14, 0.5);
+    }
+
+    /* Main Area */
+    .main-wrapper {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      max-height: 100%;
+    }
+
+    .top-controls-bar {
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 9, 14, 0.95);
+      backdrop-filter: blur(16px);
+      z-index: 30;
+      flex-shrink: 0;
+    }
+
+    .channel-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      min-width: 0;
+    }
+
+    .channel-tag {
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .btn-toggle-sidebar {
+      display: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 0.65rem;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .btn-swiss {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.5rem 0.85rem;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .btn-swiss:hover {
+      border-color: #fff;
+      background: #fff;
+      color: #000;
+      transform: translateY(-1px);
+    }
+
+    .btn-swiss.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .btn-swiss.primary:hover {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+    }
+
+    /* Message Feed */
+    .message-feed {
+      flex: 1 1 0%;
+      min-height: 0;
+      height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior-y: contain;
+      padding: 1.75rem 2rem 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 240, 255, 0.45) rgba(7, 9, 14, 0.7);
+    }
+
+    /* Precision Swiss Scrollbar for Message Feed & Tab Panes */
+    .message-feed::-webkit-scrollbar,
+    .tab-pane::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .message-feed::-webkit-scrollbar-track,
+    .tab-pane::-webkit-scrollbar-track {
+      background: rgba(7, 9, 14, 0.7);
+      border-left: 1px solid var(--border);
+    }
+
+    .message-feed::-webkit-scrollbar-thumb,
+    .tab-pane::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .message-feed::-webkit-scrollbar-thumb:hover,
+    .tab-pane::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .msg-unit {
+      max-width: 920px;
+      width: 100%;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      animation: fadeInMsg 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+    }
+
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-unit.user {
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .msg-unit.bot {
+      border-color: rgba(0, 240, 255, 0.25);
+    }
+
+    .msg-meta {
+      padding: 0.45rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user .msg-meta {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .bot .msg-meta {
+      color: var(--accent);
+      background: rgba(0, 240, 255, 0.04);
+    }
+
+    .msg-body {
+      padding: 1.25rem 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: #e4e7ee;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg-body code {
+      font-family: var(--mono);
+      color: var(--accent);
+      background: rgba(0, 240, 255, 0.06);
+      padding: 0.15rem 0.45rem;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 2px;
+      font-size: 0.86em;
+    }
+
+    .msg-body pre {
+      background: #04060a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.85rem 1rem;
+      margin: 0.75rem 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      color: #f8fafc;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 240, 255, 0.35) rgba(4, 6, 10, 0.8);
+    }
+
+    .msg-body pre::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .msg-body pre::-webkit-scrollbar-track {
+      background: rgba(4, 6, 10, 0.8);
+    }
+
+    .msg-body pre::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .msg-body pre::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    /* Jump to Bottom Floating Action */
+    .btn-scroll-bottom {
+      position: absolute;
+      bottom: 88px;
+      right: 2rem;
+      background: rgba(11, 15, 25, 0.94);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.4rem 0.85rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 240, 255, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 25;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-scroll-bottom.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .btn-scroll-bottom:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+    }
+
+    /* Input Dock */
+    .input-dock {
+      padding: 1rem 2rem 1.5rem 2rem;
+      flex-shrink: 0;
+    }
+
+    .input-canvas {
+      max-width: 920px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      background: rgba(14, 19, 30, 0.95);
+      border-radius: 2px;
+      position: relative;
+      box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-canvas:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+
+    .input-canvas::before {
+      content: "+";
+      position: absolute;
+      top: -7px;
+      left: -5px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--border-strong);
+      pointer-events: none;
+    }
+
+    .input-canvas::after {
+      content: "+";
+      position: absolute;
+      bottom: -7px;
+      right: -5px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--border-strong);
+      pointer-events: none;
+    }
+
+    textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      height: 52px;
+      max-height: 180px;
+      padding: 0.85rem 1rem 0.5rem 1rem;
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+      font-family: var(--sans);
+    }
+
+    .dock-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 1rem 0.75rem 1rem;
+    }
+
+    .dock-hint {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Mobile Drawer */
+    @media (max-width: 768px) {
+      aside {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 300px;
+        transform: translateX(-100%);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      }
+      aside.open {
+        transform: translateX(0);
+      }
+      .btn-toggle-sidebar {
+        display: inline-flex;
+      }
+      .channel-tag {
+        max-width: 150px;
+      }
+      .message-feed {
+        padding: 1rem;
+      }
+      .input-dock {
+        padding: 0.75rem 1rem 1rem 1rem;
+      }
+      .dock-hint {
+        display: none;
+      }
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 35;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar / Session Drawer -->
+    <aside id="sidebar">
+      <div class="rack-header">
+        <div class="brand-mark">
+          <span class="dot"></span>
+          HERMES_CORE // SERVER
+        </div>
+        <span class="tech-tag" id="originTag">DIRECT_ORIGIN</span>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn-new-chat" onclick="startNewSession()">
+          <span>+</span> NEW CHAT
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" id="tabBtnChats" onclick="switchSidebarTab('chats')">💬 CHATS</button>
+        <button class="tab-btn" id="tabBtnSettings" onclick="switchSidebarTab('settings')">⚙ SETTINGS</button>
+      </div>
+
+      <!-- Tab: Chats -->
+      <div class="tab-pane active" id="tabChats">
+        <div class="session-list" id="sessionList">
+          <!-- Populated dynamically -->
+        </div>
+        <div class="session-footer-actions">
+          <button class="btn-swiss" style="font-size: 0.68rem; opacity: 0.8;" onclick="clearAllSessions()">
+            CLEAR ALL HISTORY
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Settings -->
+      <div class="tab-pane" id="tabSettings">
+        <div class="settings-pane">
+          <div class="sec-index">01 // INFERENCE_MODEL</div>
+          <div class="field-group">
+            <label for="modelSelect">Active Model (:free)</label>
+            <select class="field-select" id="modelSelect">
+              <option value="openrouter/free" selected>⚡ Auto Free Router (Default / Recommended)</option>
+            </select>
+          </div>
+
+          <div class="sec-index">02 // AUTHENTICATION</div>
+          <div class="field-group">
+            <label for="apiKeyField">API_SERVER_KEY (Optional Override)</label>
+            <input type="password" class="field-input" id="apiKeyField" placeholder="auto-injected on server" />
+            <button class="btn-swiss primary" style="margin-top: 0.4rem;" onclick="saveKey()">
+              SAVE KEY ➔
+            </button>
+          </div>
+
+          <div class="sec-index">03 // SERVER_STATUS</div>
+          <div class="health-rack">
+            <span>DIRECT_GATEWAY</span>
+            <div class="health-status">
+              <span class="dot" style="width: 6px; height: 6px; background: var(--lime); border-radius: 50%; display: inline-block;"></span>
+              CONNECTED : $0/MO
+            </div>
+          </div>
+
+          <div class="sec-index">04 // ADVANCED MANAGEMENT</div>
+          <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.4rem;">
+            Panel de control oficial para configurar MCP, skills, tareas cron, editar config.yaml y ver logs en vivo.
+          </div>
+          <a href="/dashboard" class="btn-swiss primary" style="text-decoration: none; text-align: center; width: 100%; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+            🎛 ABRIR WEB DASHBOARD ➔
+          </a>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem;">
+            <a href="/config" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">⚙ Config.yaml</a>
+            <a href="/skills" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">🧩 Skills</a>
+            <a href="/mcp" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">🔌 MCP Servers</a>
+            <a href="/logs" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📜 Logs</a>
+            <a href="/cron" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">⏰ Cron</a>
+            <a href="/analytics" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📊 Analítica</a>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; margin-top: 0.35rem;">
+            <a href="/docs" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📖 Manual HTML</a>
+            <a href="/presentation" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📽 Diapositivas</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="rack-footer">
+        [PERSISTENT_MEMORY] Chats stored in local browser sandbox. Zero data loss on refresh.
+      </div>
+    </aside>
+
+    <!-- Main View -->
+    <div class="main-wrapper">
+      <div class="top-controls-bar">
+        <div class="channel-info">
+          <button class="btn-toggle-sidebar" onclick="toggleSidebar()">☰ CHATS</button>
+          <span>SESSION // <span class="channel-tag" id="currentSessionTitle">Default Session</span></span>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <a href="/docs" class="btn-swiss" style="text-decoration: none;" title="Open Master Documentation">📖 DOCS</a>
+          <a href="/presentation" class="btn-swiss" style="text-decoration: none;" title="Interactive Slide Deck">📽 SLIDES</a>
+          <a href="/dashboard" class="btn-swiss primary" style="text-decoration: none;" title="Open Official Hermes Web Dashboard">🎛 DASHBOARD</a>
+          <button class="btn-swiss" onclick="startNewSession()">+ NEW</button>
+          <button class="btn-swiss" onclick="clearCurrentSession()">CLEAR CHAT</button>
+        </div>
+      </div>
+
+      <div class="message-feed" id="messageFeed">
+        <!-- Messages rendered dynamically -->
+      </div>
+
+      <button id="btnScrollBottom" class="btn-scroll-bottom" title="Scroll to bottom" onclick="scrollToBottom(true)">
+        ↓ LATEST
+      </button>
+
+      <div class="input-dock">
+        <div class="input-canvas">
+          <textarea id="promptInput" placeholder="Message your autonomous agent... (Enter to transmit)"></textarea>
+          <div class="dock-actions">
+            <span class="dock-hint">ENDPOINT: RELATIVE // /v1/chat/completions</span>
+            <button class="btn-swiss primary" id="sendBtn" onclick="transmit()">
+              TRANSMIT ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Storage Keys
+    const SESSIONS_KEY = 'hermes_server_sessions';
+    const ACTIVE_SESSION_KEY = 'hermes_server_active_session_id';
+    const SERVER_KEY_STORAGE = 'hermes_server_key';
+    const MODEL_STORAGE = 'hermes_server_model';
+
+    // DOM Elements
+    const messageFeed = document.getElementById('messageFeed');
+    const btnScrollBottom = document.getElementById('btnScrollBottom');
+    const promptInput = document.getElementById('promptInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const modelSelect = document.getElementById('modelSelect');
+    const apiKeyField = document.getElementById('apiKeyField');
+    const originTag = document.getElementById('originTag');
+    const sessionList = document.getElementById('sessionList');
+    const currentSessionTitle = document.getElementById('currentSessionTitle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    let sessions = [];
+    let activeSessionId = null;
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      const storedKey = localStorage.getItem(SERVER_KEY_STORAGE) || '';
+      apiKeyField.value = storedKey;
+
+      const host = window.location.hostname || 'localhost';
+      originTag.textContent = `HOST : ${host.toUpperCase()}`;
+
+      loadSessions();
+      fetchDynamicModels();
+    });
+
+    // Session Management
+    function loadSessions() {
+      try {
+        const raw = localStorage.getItem(SESSIONS_KEY);
+        sessions = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        sessions = [];
+      }
+
+      activeSessionId = localStorage.getItem(ACTIVE_SESSION_KEY);
+
+      if (!sessions || sessions.length === 0) {
+        const initial = createNewSessionObject('Welcome Session');
+        sessions = [initial];
+        activeSessionId = initial.id;
+        saveSessions();
+      } else if (!sessions.some(s => s.id === activeSessionId)) {
+        activeSessionId = sessions[0].id;
+        localStorage.setItem(ACTIVE_SESSION_KEY, activeSessionId);
+      }
+
+      renderSessionList();
+      renderActiveSessionMessages();
+    }
+
+    function saveSessions() {
+      try {
+        localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+        if (activeSessionId) {
+          localStorage.setItem(ACTIVE_SESSION_KEY, activeSessionId);
+        }
+      } catch (e) {
+        console.warn('Storage error:', e);
+      }
+    }
+
+    function createNewSessionObject(customTitle) {
+      return {
+        id: 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+        title: customTitle || 'New Conversation',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        model: modelSelect ? modelSelect.value : 'openrouter/free',
+        messages: []
+      };
+    }
+
+    function getActiveSession() {
+      return sessions.find(s => s.id === activeSessionId) || sessions[0];
+    }
+
+    function renderSessionList() {
+      sessionList.innerHTML = '';
+
+      if (sessions.length === 0) {
+        sessionList.innerHTML = '<div class="empty-sessions">No saved conversations.<br>Click + NEW CHAT to begin.</div>';
+        return;
+      }
+
+      sessions.forEach(sess => {
+        const item = document.createElement('div');
+        item.className = `session-item ${sess.id === activeSessionId ? 'active' : ''}`;
+        item.onclick = (e) => {
+          if (e.target.closest('.btn-delete-session')) return;
+          switchSession(sess.id);
+        };
+
+        const info = document.createElement('div');
+        info.className = 'session-info';
+
+        const title = document.createElement('div');
+        title.className = 'session-title';
+        title.textContent = sess.title || 'Untitled Session';
+
+        const meta = document.createElement('div');
+        meta.className = 'session-meta';
+        const dateStr = new Date(sess.updatedAt || sess.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' });
+        const timeStr = new Date(sess.updatedAt || sess.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const msgCount = (sess.messages ? sess.messages.length : 0);
+        meta.textContent = `${dateStr} ${timeStr} // ${msgCount} MSGS`;
+
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-delete-session';
+        delBtn.title = 'Delete Conversation';
+        delBtn.textContent = '✕';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteSession(sess.id);
+        };
+
+        item.appendChild(info);
+        item.appendChild(delBtn);
+        sessionList.appendChild(item);
+      });
+    }
+
+    function renderActiveSessionMessages() {
+      const session = getActiveSession();
+      if (!session) return;
+
+      currentSessionTitle.textContent = session.title || 'Conversation';
+
+      messageFeed.innerHTML = '';
+
+      if (!session.messages || session.messages.length === 0) {
+        renderWelcomeCard();
+        return;
+      }
+
+      session.messages.forEach(msg => {
+        appendUnit(msg.role, msg.content, msg.timestamp || '', false);
+      });
+
+      requestAnimationFrame(() => {
+        messageFeed.scrollTop = messageFeed.scrollHeight;
+      });
+    }
+
+    function renderWelcomeCard() {
+      const card = document.createElement('div');
+      card.className = 'msg-unit bot';
+      card.id = 'welcomeCard';
+      card.innerHTML = `
+        <div class="msg-meta">
+          <span>[ AI // HERMES_AGENT ]</span>
+          <span>ON_SERVER_ORIGIN: CONNECTED</span>
+        </div>
+        <div class="msg-body">
+          <strong>Hermes Agent On-Server Console Ready.</strong><br><br>
+          This chat runs directly on your Render server deployment with relative <code>/v1/chat/completions</code> endpoints. Zero CORS, zero telemetry, zero monthly subscriptions.
+        </div>
+      `;
+      messageFeed.appendChild(card);
+    }
+
+    function startNewSession() {
+      const newSession = createNewSessionObject('New Conversation');
+      sessions.unshift(newSession);
+      activeSessionId = newSession.id;
+      saveSessions();
+      renderSessionList();
+      renderActiveSessionMessages();
+      closeSidebar();
+      promptInput.focus();
+    }
+
+    function switchSession(id) {
+      if (activeSessionId === id) return;
+      activeSessionId = id;
+      saveSessions();
+      renderSessionList();
+      renderActiveSessionMessages();
+      closeSidebar();
+    }
+
+    function deleteSession(id) {
+      if (sessions.length <= 1) {
+        if (confirm('Delete current conversation history?')) {
+          sessions[0].messages = [];
+          sessions[0].title = 'New Conversation';
+          sessions[0].updatedAt = Date.now();
+          saveSessions();
+          renderSessionList();
+          renderActiveSessionMessages();
+        }
+        return;
+      }
+
+      const idx = sessions.findIndex(s => s.id === id);
+      if (idx !== -1) {
+        sessions.splice(idx, 1);
+        if (activeSessionId === id) {
+          activeSessionId = sessions[0].id;
+        }
+        saveSessions();
+        renderSessionList();
+        renderActiveSessionMessages();
+      }
+    }
+
+    function clearCurrentSession() {
+      const session = getActiveSession();
+      if (!session) return;
+      if (session.messages.length === 0) return;
+
+      if (confirm('Clear messages in this conversation?')) {
+        session.messages = [];
+        session.updatedAt = Date.now();
+        saveSessions();
+        renderSessionList();
+        renderActiveSessionMessages();
+      }
+    }
+
+    function clearAllSessions() {
+      if (confirm('Are you sure you want to delete all saved conversations?')) {
+        const fresh = createNewSessionObject('New Conversation');
+        sessions = [fresh];
+        activeSessionId = fresh.id;
+        saveSessions();
+        renderSessionList();
+        renderActiveSessionMessages();
+      }
+    }
+
+    // Sidebar UI
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('active');
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('active');
+    }
+
+    function switchSidebarTab(tab) {
+      const tabChats = document.getElementById('tabChats');
+      const tabSettings = document.getElementById('tabSettings');
+      const btnChats = document.getElementById('tabBtnChats');
+      const btnSettings = document.getElementById('tabBtnSettings');
+
+      if (tab === 'chats') {
+        tabChats.classList.add('active');
+        tabSettings.classList.remove('active');
+        btnChats.classList.add('active');
+        btnSettings.classList.remove('active');
+      } else {
+        tabSettings.classList.add('active');
+        tabChats.classList.remove('active');
+        btnSettings.classList.add('active');
+        btnChats.classList.remove('active');
+      }
+    }
+
+    function saveKey() {
+      const val = apiKeyField.value.trim();
+      localStorage.setItem(SERVER_KEY_STORAGE, val);
+      alert('API_SERVER_KEY saved in local sandbox.');
+    }
+
+    // Dynamic Models
+    modelSelect.addEventListener('change', () => {
+      localStorage.setItem(MODEL_STORAGE, modelSelect.value);
+      const session = getActiveSession();
+      if (session) {
+        session.model = modelSelect.value;
+        saveSessions();
+      }
+    });
+
+    async function fetchDynamicModels() {
+      const savedModel = localStorage.getItem(MODEL_STORAGE) || 'openrouter/free';
+
+      const targetCompanies = [
+        { label: 'GOOGLE', match: id => id.startsWith('google/') },
+        { label: 'NVIDIA', match: id => id.startsWith('nvidia/') },
+        { label: 'DEEPSEEK', match: id => id.startsWith('deepseek/') },
+        { label: 'QWEN', match: id => id.startsWith('qwen/') },
+        { label: 'META / OLLAMA', match: id => id.startsWith('meta-llama/') || id.startsWith('meta/') || id.startsWith('ollama/') }
+      ];
+
+      try {
+        const res = await fetch('https://openrouter.ai/api/v1/models');
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        const allModels = data.data || [];
+
+        const freeModels = allModels.filter(m => {
+          const isFree = m.id.endsWith(':free') || 
+                         (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0') ||
+                         m.id === 'openrouter/free';
+          return isFree;
+        });
+
+        modelSelect.innerHTML = '';
+
+        const autoOpt = document.createElement('option');
+        autoOpt.value = 'openrouter/free';
+        autoOpt.textContent = '⚡ Auto Free Router (Default / Recommended)';
+        modelSelect.appendChild(autoOpt);
+
+        targetCompanies.forEach(comp => {
+          const matched = freeModels.filter(m => comp.match(m.id));
+          if (matched.length > 0) {
+            const group = document.createElement('optgroup');
+            group.label = `─── ${comp.label} FREE ───`;
+
+            matched.sort((a, b) => (b.context_length || 0) - (a.context_length || 0));
+
+            matched.forEach(model => {
+              const opt = document.createElement('option');
+              opt.value = model.id;
+              const ctx = model.context_length ? `${Math.round(model.context_length / 1024)}k` : '';
+              opt.textContent = `${model.name || model.id} [${ctx}]`;
+              group.appendChild(opt);
+            });
+
+            modelSelect.appendChild(group);
+          }
+        });
+
+        let found = Array.from(modelSelect.options).some(o => o.value === savedModel);
+        if (!found && savedModel !== 'openrouter/free') {
+          const customOpt = document.createElement('option');
+          customOpt.value = savedModel;
+          customOpt.textContent = `${savedModel} (Saved)`;
+          modelSelect.appendChild(customOpt);
+        }
+        modelSelect.value = savedModel;
+
+      } catch (e) {
+        console.warn('[!] Using fallback model list:', e);
+        const fallbacks = [
+          { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Meta Llama 3.3 70B Instruct [128k]' },
+          { id: 'google/gemini-2.0-flash-exp:free', name: 'Google Gemini 2.0 Flash Experimental [1000k]' },
+          { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1 Reasoning Free [64k]' },
+          { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'Qwen 2.5 Coder 32B Instruct [32k]' }
+        ];
+
+        modelSelect.innerHTML = '<option value="openrouter/free">⚡ Auto Free Router (Default / Recommended)</option>';
+        const group = document.createElement('optgroup');
+        group.label = '─── RECOMMENDED FREE MODELS ───';
+        fallbacks.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f.id;
+          opt.textContent = f.name;
+          group.appendChild(opt);
+        });
+        modelSelect.appendChild(group);
+        modelSelect.value = savedModel;
+      }
+    }
+
+    // Input Handling
+    promptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        transmit();
+      }
+    });
+
+    // Transmission with Persistent Storage
+    async function transmit() {
+      const prompt = promptInput.value.trim();
+      const apiKey = localStorage.getItem(SERVER_KEY_STORAGE) || '';
+      const model = modelSelect.value;
+
+      if (!prompt) return;
+
+      const welcome = document.getElementById('welcomeCard');
+      if (welcome) welcome.remove();
+
+      const session = getActiveSession();
+      const userTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Save user message to session
+      session.messages.push({
+        role: 'user',
+        content: prompt,
+        timestamp: userTimestamp
+      });
+
+      // Derive smart title if it's the first user prompt
+      if (!session.title || session.title === 'New Conversation' || session.title === 'Welcome Session') {
+        session.title = prompt.length > 28 ? prompt.slice(0, 26).trim() + '...' : prompt;
+        currentSessionTitle.textContent = session.title;
+      }
+
+      session.updatedAt = Date.now();
+      saveSessions();
+      renderSessionList();
+
+      appendUnit('user', prompt, userTimestamp, true);
+      promptInput.value = '';
+      sendBtn.disabled = true;
+
+      const botCard = appendUnit('bot', 'Processing query...', 'WAITING', true);
+
+      try {
+        const reqHeaders = {
+          'Content-Type': 'application/json'
+        };
+        if (apiKey) {
+          reqHeaders['Authorization'] = `Bearer ${apiKey}`;
+        }
+
+        // Prepare conversation context from session
+        const messagesPayload = [
+          {
+            role: 'system',
+            content: 'You are Hermes Agent, a capable autonomous AI assistant. Be direct, precise, helpful, and match the language used by the user.'
+          },
+          ...session.messages.map(m => ({ role: m.role, content: m.content }))
+        ];
+
+        const response = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          headers: reqHeaders,
+          body: JSON.stringify({
+            model: model,
+            messages: messagesPayload
+          })
+        });
+
+        if (!response.ok) {
+          let errorText = '';
+          let gatewayLog = '';
+          try {
+            const errObj = await response.json();
+            errorText = errObj.error || errObj.message || JSON.stringify(errObj);
+            gatewayLog = errObj.gateway_log || '';
+          } catch (_) {
+            errorText = await response.text();
+          }
+          const err = new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+          if (gatewayLog) err.gatewayLog = gatewayLog;
+          throw err;
+        }
+
+        const data = await response.json();
+        const text = data.choices && data.choices[0] && data.choices[0].message
+          ? data.choices[0].message.content
+          : 'Empty message received from server.';
+
+        const botTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        botCard.querySelector('.msg-body').textContent = text;
+        botCard.querySelector('.msg-meta span:last-child').textContent = botTimestamp;
+        scrollToBottomIfNear(true);
+
+        // Save bot response to session
+        session.messages.push({
+          role: 'assistant',
+          content: text,
+          timestamp: botTimestamp
+        });
+        session.updatedAt = Date.now();
+        saveSessions();
+        renderSessionList();
+
+      } catch (err) {
+        const bodyEl = botCard.querySelector('.msg-body');
+        bodyEl.innerHTML = '';
+
+        const badge = document.createElement('span');
+        badge.style.color = 'var(--danger)';
+        badge.style.fontFamily = 'var(--mono)';
+        badge.style.fontWeight = '700';
+        badge.textContent = '[COMMUNICATION_ERROR]';
+
+        const msgDiv = document.createElement('div');
+        msgDiv.style.marginTop = '8px';
+        msgDiv.textContent = err.message;
+
+        bodyEl.appendChild(badge);
+        bodyEl.appendChild(msgDiv);
+
+        if (err.gatewayLog && err.gatewayLog.trim() && err.gatewayLog !== 'No gateway logs recorded.') {
+          const logTitle = document.createElement('div');
+          logTitle.style.marginTop = '12px';
+          logTitle.style.fontFamily = 'var(--mono)';
+          logTitle.style.fontSize = '0.7rem';
+          logTitle.style.color = 'var(--text-muted)';
+          logTitle.textContent = 'GATEWAY STARTUP LOG:';
+
+          const logPre = document.createElement('pre');
+          logPre.style.marginTop = '4px';
+          logPre.style.padding = '8px 10px';
+          logPre.style.background = 'rgba(0, 0, 0, 0.4)';
+          logPre.style.border = '1px solid var(--border)';
+          logPre.style.borderRadius = '2px';
+          logPre.style.fontSize = '0.75rem';
+          logPre.style.fontFamily = 'var(--mono)';
+          logPre.style.whiteSpace = 'pre-wrap';
+          logPre.style.wordBreak = 'break-all';
+          logPre.style.color = 'var(--text-muted)';
+          logPre.textContent = err.gatewayLog;
+
+          bodyEl.appendChild(logTitle);
+          bodyEl.appendChild(logPre);
+        }
+
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'btn-swiss';
+        retryBtn.style.marginTop = '12px';
+        retryBtn.style.fontSize = '0.72rem';
+        retryBtn.textContent = 'RETRY TRANSMISSION ↺';
+        retryBtn.onclick = () => {
+          botCard.remove();
+          promptInput.value = prompt;
+          transmit();
+        };
+        bodyEl.appendChild(retryBtn);
+        scrollToBottomIfNear(true);
+      } finally {
+        sendBtn.disabled = false;
+        promptInput.focus();
+      }
+    }
+
+    function appendUnit(role, text, timeStr, autoScroll = true) {
+      const unit = document.createElement('div');
+      unit.className = `msg-unit ${role}`;
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      const timeDisplay = timeStr || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      meta.innerHTML = role === 'user' 
+        ? `<span>[ USER // COMMAND ]</span><span>${timeDisplay}</span>` 
+        : `<span>[ AI // HERMES_AGENT ]</span><span>${timeDisplay}</span>`;
+
+      const body = document.createElement('div');
+      body.className = 'msg-body';
+      body.textContent = text;
+
+      unit.appendChild(meta);
+      unit.appendChild(body);
+      messageFeed.appendChild(unit);
+
+      if (autoScroll) {
+        scrollToBottom(false);
+      }
+      return unit;
+    }
+
+    function scrollToBottom(smooth = false) {
+      requestAnimationFrame(() => {
+        if (smooth) {
+          messageFeed.scrollTo({
+            top: messageFeed.scrollHeight,
+            behavior: 'smooth'
+          });
+        } else {
+          messageFeed.scrollTop = messageFeed.scrollHeight;
+        }
+      });
+    }
+
+    function scrollToBottomIfNear(smooth = true) {
+      const threshold = 180;
+      const isNearBottom = (messageFeed.scrollHeight - messageFeed.scrollTop - messageFeed.clientHeight) <= threshold;
+      if (isNearBottom) {
+        scrollToBottom(smooth);
+      }
+    }
+
+    // Floating Scroll-To-Bottom Handler
+    messageFeed.addEventListener('scroll', () => {
+      const scrollGap = messageFeed.scrollHeight - messageFeed.scrollTop - messageFeed.clientHeight;
+      if (scrollGap > 220) {
+        btnScrollBottom.classList.add('visible');
+      } else {
+        btnScrollBottom.classList.remove('visible');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: hermes-agent-free
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: frankfurt # or oregon, ohio
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false # Enter your OpenRouter sk-or-v1-... key
+      - key: MODEL_NAME
+        value: meta-llama/llama-3.3-70b-instruct:free
+      - key: PORT
+        value: "10000"
+      - key: API_SERVER_KEY
+        generateValue: true # Generates a secure random password
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false # Optional Telegram bot token from @BotFather
+      - key: TELEGRAM_ALLOWED_USERS
+        sync: false # Optional Telegram user numeric ID

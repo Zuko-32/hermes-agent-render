@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  hermes:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: hermes-agent
+    restart: unless-stopped
+    ports:
+      - "10000:10000"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-meta-llama/llama-3.3-70b-instruct:free}
+      - PORT=10000
+      - API_SERVER_KEY=${API_SERVER_KEY:-secret_hermes_password_2026}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS:-}
+    volumes:
+      - hermes_data:/opt/data
+
+volumes:
+  hermes_data:

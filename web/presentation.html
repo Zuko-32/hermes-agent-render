@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HERMES AGENT // RENDER CLOUD MASTER MANUAL</title>
+  
+  <!-- Precision Typography inspired by seunghyuk.com -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090e;
+      --bg-surface: #0d111a;
+      --bg-card: rgba(14, 19, 30, 0.82);
+      --border: rgba(255, 255, 255, 0.12);
+      --border-strong: rgba(255, 255, 255, 0.28);
+      --text: #f4f4f6;
+      --text-muted: #8e95a5;
+      --accent: #00f0ff;
+      --accent-dim: rgba(0, 240, 255, 0.12);
+      --lime: #c6f135;
+      --danger: #ff3366;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', -apple-system, sans-serif;
+      --display: 'Syne', 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Top Technical Bar */
+    header {
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 9, 14, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-mark {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #fff;
+    }
+
+    .brand-mark .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--lime);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--lime);
+      display: inline-block;
+    }
+
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Language Switcher */
+    .lang-switch {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .lang-opt {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-opt.active {
+      background: #fff;
+      color: #000;
+    }
+
+    /* Main Presentation Frame */
+    .viewport {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: clamp(0.75rem, 2vh, 1.5rem);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(0.75rem, 2vh, 1.5rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.98) translateY(12px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Precision Canvas Card */
+    .canvas-card {
+      width: 100%;
+      max-width: 1040px;
+      max-height: calc(100vh - 125px);
+      max-height: calc(100dvh - 125px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: clamp(1.25rem, 2.5vw, 2.25rem) clamp(1.25rem, 3vw, 2.5rem);
+      position: relative;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.85);
+
+      /* Elegant invisible / subtle scrollbar to prevent layout shifts */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    .canvas-card::-webkit-scrollbar {
+      width: 4px;
+    }
+    .canvas-card::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .canvas-card::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+    .canvas-card::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Corner Crosshairs */
+    .canvas-card::before {
+      content: "+";
+      position: absolute;
+      top: -7px;
+      left: -5px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--border-strong);
+      pointer-events: none;
+    }
+    .canvas-card::after {
+      content: "+";
+      position: absolute;
+      bottom: -7px;
+      right: -5px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--border-strong);
+      pointer-events: none;
+    }
+
+    /* Section Index Header */
+    .sec-index {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .sec-index::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Typography */
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(1.85rem, 3.8vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 0.85rem;
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: clamp(0.9rem, 1.2vw, 1rem);
+      line-height: 1.6;
+      color: #b5bcc9;
+      margin-bottom: 0.85rem;
+      font-weight: 400;
+    }
+
+    /* Precision Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.15rem;
+      margin-top: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .box {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 2px;
+      padding: 1.15rem 1.25rem;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .box:hover {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .box-title {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.45rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .box-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* Interactive Action Row */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1rem;
+    }
+
+    .btn-swiss {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.55rem 1rem;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .btn-swiss:hover {
+      border-color: #fff;
+      background: #fff;
+      color: #000;
+      transform: translateY(-1px);
+    }
+
+    .btn-swiss.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .btn-swiss.primary:hover {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+    }
+
+    .btn-swiss.lime {
+      background: var(--lime);
+      color: #000;
+      border-color: var(--lime);
+    }
+
+    .btn-swiss.lime:hover {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+    }
+
+    /* Step Blocks */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 0.85rem 0;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.015);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+      border-right: 1px solid var(--border);
+      color: var(--accent);
+    }
+
+    .step-body {
+      padding: 0.85rem 1.15rem;
+    }
+
+    .step-body h4 {
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Table Container for Responsive Horizontal Scroll */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0.85rem 0;
+      border: 1px solid var(--border);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 4px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 540px;
+    }
+
+    th, td {
+      padding: 0.6rem 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+    }
+
+    td {
+      font-size: 0.8rem;
+    }
+
+    td code {
+      font-family: var(--mono);
+      color: var(--accent);
+      background: rgba(0, 240, 255, 0.06);
+      padding: 0.15rem 0.4rem;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    /* Snippets */
+    .code-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #04060a;
+      border: 1px solid var(--border);
+      padding: 0.65rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      border-radius: 2px;
+      margin: 0.65rem 0;
+      word-break: break-all;
+    }
+
+    .copy-pill {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 0.25rem 0.65rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: #fff;
+      cursor: pointer;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    .copy-pill:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    /* Bottom Technical Footer */
+    footer {
+      padding: 0.85rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7, 9, 14, 0.95);
+      font-family: var(--mono);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .status-coords {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .nav-rack {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .counter-gauge {
+      font-size: 0.82rem;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .btn-ctrl:hover {
+      border-color: #fff;
+      background: #fff;
+      color: #000;
+    }
+
+    .btn-ctrl.primary {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+    }
+
+    .btn-ctrl.primary:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ============================================================== */
+    /* RESPONSIVE MEDIA QUERIES (TABLETS & PHONES)                     */
+    /* ============================================================== */
+    @media (max-width: 900px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .status-coords .hide-sm {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 0.65rem 1rem;
+      }
+      .brand-mark {
+        font-size: 0.82rem;
+      }
+      .tech-tag {
+        display: none;
+      }
+      .viewport {
+        padding: 0.5rem;
+      }
+      .slide {
+        padding: 0.5rem;
+      }
+      .canvas-card {
+        padding: 1.25rem 1rem;
+        max-height: calc(100vh - 110px);
+        max-height: calc(100dvh - 110px);
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .step-item {
+        grid-template-columns: 38px 1fr;
+      }
+      .step-num {
+        font-size: 0.8rem;
+      }
+      .step-body {
+        padding: 0.65rem 0.85rem;
+      }
+      footer {
+        padding: 0.65rem 1rem;
+      }
+      .status-coords {
+        display: none;
+      }
+      .nav-rack {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .btn-ctrl {
+        padding: 0.4rem 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Technical Bar -->
+  <header>
+    <div class="brand-group">
+      <div class="brand-mark">
+        <span class="dot"></span>
+        HERMES_AGENT // CORE
+      </div>
+      <span class="tech-tag" id="statusTag">RENDER_HOSTED : $0/MO</span>
+      <span class="tech-tag">SUBSCRIPTION_FREE</span>
+    </div>
+
+    <div class="header-right">
+      <div class="lang-switch">
+        <button class="lang-opt active" id="btnEn" onclick="setLang('en')">EN</button>
+        <button class="lang-opt" id="btnEs" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Presentation Viewport -->
+  <main class="viewport" id="viewport">
+
+    <!-- Slide 1: Introduction -->
+    <div class="slide active">
+      <div class="canvas-card">
+        <div class="sec-index">01 // MANIFESTO & ARCHITECTURE</div>
+        <h1 data-en="Autonomous 24/7 AI Server<br><span style='color: var(--accent);'>100% Free Infrastructure</span>"
+            data-es="Servidor de IA Autónomo 24/7<br><span style='color: var(--accent);'>Infraestructura 100% Gratuita</span>">
+          Autonomous 24/7 AI Server<br><span style='color: var(--accent);'>100% Free Infrastructure</span>
+        </h1>
+        <p data-en="Complete step-by-step master guide to deploying Nous Research's persistent Hermes Agent on Render Cloud, connected to cutting-edge OpenRouter free models (:free). Fully accessible from your web browser or Telegram."
+           data-es="Guía maestra paso a paso para desplegar el agente persistente Hermes de Nous Research en la nube de Render, conectado a los modelos abiertos gratuitos de OpenRouter (:free). Accesible desde navegador o Telegram.">
+          Complete step-by-step master guide to deploying Nous Research's persistent Hermes Agent on Render Cloud, connected to cutting-edge OpenRouter free models (:free). Fully accessible from your web browser or Telegram.
+        </p>
+
+        <div class="grid-2">
+          <div class="box">
+            <div class="box-title" style="color: var(--danger);" data-en="[01] The $240/yr Bottleneck" data-es="[01] El Coste de las Suscripciones">[01] The $240/yr Bottleneck</div>
+            <p class="box-desc"
+               data-en="Proprietary subscriptions (ChatGPT Plus, Claude Pro) charge $20/month with strict throttles, closed silos, and zero data sovereignty."
+               data-es="Las suscripciones comerciales (ChatGPT Plus, Claude Pro) cuestan 20€/mes con límites de uso arbitrarios y sin soberanía de datos.">
+              Proprietary subscriptions (ChatGPT Plus, Claude Pro) charge $20/month with strict throttles, closed silos, and zero data sovereignty.
+            </p>
+          </div>
+
+          <div class="box" style="border-color: var(--lime);">
+            <div class="box-title" style="color: var(--lime);" data-en="[02] Sovereign Freedom" data-es="[02] Soberanía y Coste 0">[02] Sovereign Freedom</div>
+            <p class="box-desc"
+               data-en="Your personal cloud container running 70B parameter models at zero monthly cost, with persistent memory and custom skills."
+               data-es="Tu propio contenedor en la nube con modelos de 70B parámetros a coste 0€/mes, con memoria persistente y habilidades personalizadas.">
+              Your personal cloud container running 70B parameter models at zero monthly cost, with persistent memory and custom skills.
+            </p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-swiss primary" onclick="navSlide(1)" data-en="Begin Setup ➔" data-es="Comenzar Configuración ➔">Begin Setup ➔</button>
+          <a href="https://openrouter.ai" target="_blank" class="btn-swiss" data-en="OpenRouter Portal ↗" data-es="Portal OpenRouter ↗">OpenRouter Portal ↗</a>
+          <a href="https://render.com" target="_blank" class="btn-swiss" data-en="Render Dashboard ↗" data-es="Panel Render ↗">Render Dashboard ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Prerequisites -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">02 // PREREQUISITES & VERIFICATION</div>
+        <h2 data-en="Zero Coding. Zero Fees. Zero Risk." data-es="Cero Código. Cero Costes. Cero Riesgo.">Zero Coding. Zero Fees. Zero Risk.</h2>
+        <p data-en="This manual is calibrated for complete beginners and technical pros alike. You do not need to install local command-line tools or possess server experience."
+           data-es="Este manual está calibrado para principiantes y expertos por igual. No necesitas instalar herramientas de consola en tu PC ni tener conocimientos de servidores.">
+          This manual is calibrated for complete beginners and technical pros alike. You do not need to install local command-line tools or possess server experience.
+        </p>
+
+        <div class="grid-3">
+          <div class="box">
+            <div class="box-title">01 / EMAIL ACCOUNT</div>
+            <p class="box-desc" data-en="Standard Google or email account to register on OpenRouter and Render." data-es="Cuenta de correo o Google estándar para registrarte en OpenRouter y Render.">
+              Standard Google or email account to register on OpenRouter and Render.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title">02 / WEB BROWSER</div>
+            <p class="box-desc" data-en="Any standard browser (Chrome, Edge, Safari, Firefox) on desktop or mobile." data-es="Cualquier navegador moderno (Chrome, Edge, Safari, Firefox) en móvil o PC.">
+              Any standard browser (Chrome, Edge, Safari, Firefox) on desktop or mobile.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title">03 / TELEGRAM (OPTIONAL)</div>
+            <p class="box-desc" data-en="Telegram app if you wish to text your agent on mobile like messaging a colleague." data-es="Aplicación de Telegram si deseas hablarle a tu agente desde el móvil.">
+              Telegram app if you wish to text your agent on mobile like messaging a colleague.
+            </p>
+          </div>
+        </div>
+
+        <div class="box" style="margin-top: 1rem; border-color: var(--accent);">
+          <div class="box-title" style="color: var(--accent);" data-en="GUARANTEE: NO CREDIT CARD DEMANDED" data-es="GARANTÍA: SIN TARJETA BANCARIA">GUARANTEE: NO CREDIT CARD DEMANDED</div>
+          <p class="box-desc"
+             data-en="OpenRouter models suffixed with :free have a $0.00 token cost. Render's Web Service plan allocates 750 free compute hours monthly. You will never be charged."
+             data-es="Los modelos de OpenRouter con sufijo :free tienen coste 0.00$. El plan gratuito de Render incluye 750 horas de servidor al mes. Jamás se te cobrará nada.">
+            OpenRouter models suffixed with :free have a $0.00 token cost. Render's Web Service plan allocates 750 free compute hours monthly. You will never be charged.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Step 1 OpenRouter Key -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">03 // STEP 1 : OPENROUTER KEY</div>
+        <h2 data-en="Generate Your Free Inference Key" data-es="Genera tu Clave Gratuita de OpenRouter">Generate Your Free Inference Key</h2>
+        <p data-en="OpenRouter routes API requests to top open-weights models at zero price for :free designated endpoints."
+           data-es="OpenRouter enruta peticiones a los mejores modelos de código abierto sin coste para los modelos con etiqueta :free.">
+          OpenRouter routes API requests to top open-weights models at zero price for :free designated endpoints.
+        </p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <h4 data-en="Sign in to OpenRouter" data-es="Inicia sesión en OpenRouter">Sign in to OpenRouter</h4>
+              <p data-en="Visit openrouter.ai and sign in with Google or email." data-es="Entra en openrouter.ai e inicia sesión con Google o correo.">Visit openrouter.ai and sign in with Google or email.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <h4 data-en="Navigate to API Keys" data-es="Entra en la sección de Claves">Navigate to API Keys</h4>
+              <p data-en="Open openrouter.ai/keys and click on the 'Create Key' button." data-es="Abre openrouter.ai/keys y pulsa en el botón 'Create Key'.">Open openrouter.ai/keys and click on the 'Create Key' button.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <h4 data-en="Create Key Named 'Hermes Free'" data-es="Crea la clave llamada 'Hermes Gratis'">Create Key Named 'Hermes Free'</h4>
+              <p data-en="Leave Credit Limit empty. Click Create and immediately copy your secret sk-or-v1-... key." data-es="Deja el límite monetario en blanco. Pulsa Create y copia tu clave sk-or-v1-...">Leave Credit Limit empty. Click Create and immediately copy your secret sk-or-v1-... key.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a href="https://openrouter.ai/keys" target="_blank" class="btn-swiss primary" data-en="Go to OpenRouter Keys ↗" data-es="Ir a Claves de OpenRouter ↗">Go to OpenRouter Keys ↗</a>
+          <a href="https://openrouter.ai/models?max_price=0" target="_blank" class="btn-swiss" data-en="Explore :free Models ↗" data-es="Ver Modelos :free ↗">Explore :free Models ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Step 2 Telegram Bot -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">04 // STEP 2 : TELEGRAM BOT (OPTIONAL)</div>
+        <h2 data-en="Connect to Telegram on Your Phone" data-es="Conecta con Telegram en tu Móvil">Connect to Telegram on Your Phone</h2>
+        <p data-en="Receive answers, send voice memos, and share documents with your autonomous agent directly through Telegram."
+           data-es="Recibe respuestas, envía notas de voz y comparte documentos con tu agente directamente a través de Telegram.">
+          Receive answers, send voice memos, and share documents with your autonomous agent directly through Telegram.
+        </p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <h4>Start @BotFather</h4>
+              <p data-en="Search @BotFather in Telegram (official verified blue tick) and send /newbot."
+                 data-es="Busca @BotFather en Telegram (con tic azul verificado) y envía /newbot.">
+                Search @BotFather in Telegram (official verified blue tick) and send /newbot.
+              </p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <h4 data-en="Set Bot Name & Username" data-es="Elige Nombre y Nombre de Usuario">Set Bot Name & Username</h4>
+              <p data-en="Assign a friendly name (e.g. 'My Hermes Agent') and a username ending in 'bot' (e.g. 'my_hermes_2026_bot'). Copy the HTTP API Token."
+                 data-es="Ponle un nombre visible (ej: 'Mi Asistente Hermes') y un usuario terminado en 'bot' (ej: 'mi_hermes_2026_bot'). Copia el HTTP API Token.">
+                Assign a friendly name (e.g. 'My Hermes Agent') and a username ending in 'bot' (e.g. 'my_hermes_2026_bot'). Copy the HTTP API Token.
+              </p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <h4 data-en="Find Your Numeric Telegram ID" data-es="Averigua tu ID Numérico de Telegram">Find Your Numeric Telegram ID</h4>
+              <p data-en="Message @userinfobot in Telegram. It will return your unique numeric ID (e.g. 123456789). This locks the bot to only answer you."
+                 data-es="Habla con @userinfobot en Telegram. Te responderá con tu ID numérico único. Esto bloquea el bot para que nadie más pueda usarlo.">
+                Message @userinfobot in Telegram. It will return your unique numeric ID (e.g. 123456789). This locks the bot to only answer you.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a href="https://t.me/BotFather" target="_blank" class="btn-swiss primary">Open @BotFather ↗</a>
+          <a href="https://t.me/userinfobot" target="_blank" class="btn-swiss">Open @userinfobot ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Step 3 Render Cloud Setup -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">05 // STEP 3 : RENDER CLOUD SETUP</div>
+        <h2 data-en="Deploy Free Web Service on Render" data-es="Despliega el Servidor Gratuito en Render">Deploy Free Web Service on Render</h2>
+        <p data-en="Render executes the container 24/7 with an SSL certificate (https://) and public web URL."
+           data-es="Render ejecuta el contenedor las 24 horas del día con certificado SSL (https://) y URL pública.">
+          Render executes the container 24/7 with an SSL certificate (https://) and public web URL.
+        </p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <h4 data-en="Register on Render" data-es="Crea tu cuenta en Render">Register on Render</h4>
+              <p data-en="Sign up on render.com with Google or GitHub." data-es="Regístrate en render.com con tu cuenta de Google o GitHub.">Sign up on render.com with Google or GitHub.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <h4 data-en="New Web Service" data-es="Crear nuevo Web Service">New Web Service</h4>
+              <p data-en="Click '+ New' ➔ 'Web Service'. Connect your GitHub repository (Render will automatically detect the root Dockerfile)."
+                 data-es="Pulsa en '+ New' ➔ 'Web Service'. Conecta tu repositorio de GitHub (Render detectará automáticamente el Dockerfile en la raíz).">
+                Click '+ New' ➔ 'Web Service'. Connect your GitHub repository (Render will automatically detect the root Dockerfile).
+              </p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <h4 data-en="Image URL & Free Plan" data-es="URL de la Imagen y Plan Free">Image URL & Free Plan</h4>
+              <p data-en="Enter the official Docker image below and select the Free ($0/month) instance tier:"
+                 data-es="Introduce la imagen Docker oficial y selecciona el plan Free ($0/mes):">
+                Enter the official Docker image below and select the Free ($0/month) instance tier:
+              </p>
+              <div class="code-row">
+                <span>docker.io/nousresearch/hermes-agent:latest</span>
+                <button class="copy-pill" onclick="copySnippet('docker.io/nousresearch/hermes-agent:latest')">COPY</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a href="https://dashboard.render.com" target="_blank" class="btn-swiss primary" data-en="Open Render Dashboard ↗" data-es="Abrir Panel de Render ↗">Open Render Dashboard ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Environment Variables Table -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">06 // STEP 3.1 : ENVIRONMENT VARIABLES</div>
+        <h2 data-en="Required Configuration Matrix" data-es="Tabla de Variables de Entorno">Required Configuration Matrix</h2>
+        <p data-en="In your Render Web Service settings, add these variables under 'Environment Variables':"
+           data-es="En la configuración de tu servicio de Render, añade estas variables en la sección 'Environment Variables':">
+          In your Render Web Service settings, add these variables under 'Environment Variables':
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>KEY</th>
+                <th data-en="RECOMMENDED VALUE" data-es="VALOR RECOMENDADO">RECOMMENDED VALUE</th>
+                <th data-en="ACTION" data-es="ACCIÓN">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>OPENROUTER_API_KEY</td>
+                <td>sk-or-v1-xxxxxxxx...</td>
+                <td><button class="copy-pill" onclick="copySnippet('sk-or-v1-')">TEMPLATE</button></td>
+              </tr>
+              <tr>
+                <td>MODEL_NAME</td>
+                <td>meta-llama/llama-3.3-70b-instruct:free</td>
+                <td><button class="copy-pill" onclick="copySnippet('meta-llama/llama-3.3-70b-instruct:free')">COPY</button></td>
+              </tr>
+              <tr>
+                <td>PORT</td>
+                <td>10000</td>
+                <td><button class="copy-pill" onclick="copySnippet('10000')">COPY</button></td>
+              </tr>
+              <tr>
+                <td>API_SERVER_ENABLED</td>
+                <td>true</td>
+                <td><button class="copy-pill" onclick="copySnippet('true')">COPY</button></td>
+              </tr>
+              <tr>
+                <td>API_SERVER_PORT</td>
+                <td>10000</td>
+                <td><button class="copy-pill" onclick="copySnippet('10000')">COPY</button></td>
+              </tr>
+              <tr>
+                <td>API_SERVER_KEY</td>
+                <td>clave_secreta_hermes_2026</td>
+                <td><button class="copy-pill" onclick="copySnippet('clave_secreta_hermes_2026')">COPY</button></td>
+              </tr>
+              <tr>
+                <td>TELEGRAM_BOT_TOKEN</td>
+                <td>(From @BotFather)</td>
+                <td><button class="copy-pill" onclick="copySnippet('TELEGRAM_BOT_TOKEN')">KEY</button></td>
+              </tr>
+              <tr>
+                <td>TELEGRAM_ALLOWED_USERS</td>
+                <td>(Your numeric ID from @userinfobot)</td>
+                <td><button class="copy-pill" onclick="copySnippet('TELEGRAM_ALLOWED_USERS')">KEY</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--accent); margin-top: 0.4rem;"
+           data-en="👉 Click 'Create Web Service'. In 2–3 minutes, your deployment logs will show status LIVE."
+           data-es="👉 Haz clic en 'Create Web Service'. En 2–3 minutos, los logs mostrarán el estado verde LIVE.">
+          👉 Click 'Create Web Service'. In 2–3 minutes, your deployment logs will show status LIVE.
+        </p>
+      </div>
+    </div>
+
+    <!-- Slide 7: On-Server Web Chat (chat.html) -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">07 // STEP 4 : ON-SERVER WEB CHAT</div>
+        <h2 data-en="Chat Directly from Any Browser (chat.html)" data-es="Chatea Directamente desde el Navegador (chat.html)">Chat Directly from Any Browser (chat.html)</h2>
+        <p data-en="You can host our custom chat.html directly on your Render server. No Telegram required!"
+           data-es="Puedes alojar nuestro chat.html directamente en tu servidor de Render sin depender de Telegram.">
+          You can host our custom chat.html directly on your Render server. No Telegram required!
+        </p>
+
+        <div class="grid-2">
+          <div class="box" style="border-color: var(--accent);">
+            <div class="box-title" style="color: var(--accent);" data-en="[01] Direct Server Origin" data-es="[01] Origen Directo">[01] Direct Server Origin</div>
+            <p class="box-desc"
+               data-en="When deployed with our Dockerfile, visit https://your-service.onrender.com directly. The UI loads right off your server."
+               data-es="Al desplegar con nuestro Dockerfile, visita https://tu-servicio.onrender.com directamente. La interfaz carga al instante.">
+              When deployed with our Dockerfile, visit https://your-service.onrender.com directly. The UI loads right off your server.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title" data-en="[02] Zero CORS Obstacles" data-es="[02] Cero Conflictos de CORS">[02] Zero CORS Obstacles</div>
+            <p class="box-desc"
+               data-en="Because the frontend is on the same domain as the /v1/ API, requests pass cleanly with your API_SERVER_KEY."
+               data-es="Como el frontend está en el mismo dominio que la API /v1/, las peticiones funcionan limpias y protegidas con tu API_SERVER_KEY.">
+              Because the frontend is on the same domain as the /v1/ API, requests pass cleanly with your API_SERVER_KEY.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-item" style="margin-top: 1rem;">
+          <div class="step-num">GO</div>
+          <div class="step-body">
+            <h4 data-en="Instant Browser Verification" data-es="Verificación Inmediata en Navegador">Instant Browser Verification</h4>
+            <p data-en="Open your Render URL in Chrome, Safari, or Edge. Enter your API_SERVER_KEY once and enjoy your private AI assistant."
+               data-es="Abre la URL de tu Render en Chrome, Safari o Edge. Introduce tu API_SERVER_KEY una vez y empieza a chatear.">
+              Open your Render URL in Chrome, Safari, or Edge. Enter your API_SERVER_KEY once and enjoy your private AI assistant.
+            </p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-swiss lime" onclick="downloadFile('chat.html')" data-en="Download chat.html ⤓" data-es="Descargar chat.html ⤓">Download chat.html ⤓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Standalone Client (chat_web.html) -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">08 // STEP 5 : STANDALONE WEB CLIENT</div>
+        <h2 data-en="Run Locally: chat_web.html & NextChat" data-es="Ejecución en Local: chat_web.html y NextChat">Run Locally: chat_web.html & NextChat</h2>
+        <p data-en="If you prefer keeping client files offline on your computer or using third-party web clients:"
+           data-es="Si prefieres tener el cliente guardado en tu propio ordenador o usar clientes web de terceros:">
+          If you prefer keeping client files offline on your computer or using third-party web clients:
+        </p>
+
+        <div class="grid-3">
+          <div class="box">
+            <div class="box-title">01 / chat_web.html</div>
+            <p class="box-desc"
+               data-en="Double click web/chat_web.html on your PC. Enter your Render URL and secret key to talk to your cloud agent."
+               data-es="Doble clic en web/chat_web.html en tu PC. Introduce tu URL de Render y tu clave para hablar con tu agente.">
+              Double click web/chat_web.html on your PC. Enter your Render URL and secret key to talk to your cloud agent.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title">02 / NEXTCHAT WEB</div>
+            <p class="box-desc"
+               data-en="Open app.nextchat.dev. In Settings, choose Custom OpenAI, and set endpoint to https://your-service.onrender.com/v1."
+               data-es="Abre app.nextchat.dev. En Ajustes, elige Custom OpenAI y pon https://tu-servicio.onrender.com/v1.">
+              Open app.nextchat.dev. In Settings, choose Custom OpenAI, and set endpoint to https://your-service.onrender.com/v1.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title">03 / TELEGRAM WEB</div>
+            <p class="box-desc"
+               data-en="Visit web.telegram.org in any browser. No software installation needed; pin the tab to chat 24/7."
+               data-es="Entra a web.telegram.org en cualquier navegador. Sin instalar nada, fija la pestaña para chatear siempre.">
+              Visit web.telegram.org in any browser. No software installation needed; pin the tab to chat 24/7.
+            </p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-swiss lime" onclick="downloadFile('chat_web.html')" data-en="Download chat_web.html ⤓" data-es="Descargar chat_web.html ⤓">Download chat_web.html ⤓</button>
+          <a href="https://app.nextchat.dev" target="_blank" class="btn-swiss">Open NextChat ↗</a>
+          <a href="https://web.telegram.org" target="_blank" class="btn-swiss">Open Telegram Web ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Download Center -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">09 // DOWNLOAD CENTER</div>
+        <h2 data-en="One-Click File Downloads" data-es="Descarga de Archivos con 1 Clic">One-Click File Downloads</h2>
+        <p data-en="All project files are generated and ready to download immediately directly from this presentation:"
+           data-es="Todos los archivos del proyecto están listos para descargarse directamente desde esta presentación:">
+          All project files are generated and ready to download immediately directly from this presentation:
+        </p>
+
+        <div class="grid-2">
+          <div class="box">
+            <div class="box-title">WEB / CHAT INTERFACES</div>
+            <p class="box-desc" style="margin-bottom: 0.85rem;" data-en="Self-contained HTML clients with modern UI." data-es="Clientes HTML autónomos con diseño moderno.">Self-contained HTML clients with modern UI.</p>
+            <div class="action-row" style="margin-top: 0;">
+              <button class="btn-swiss primary" onclick="downloadFile('chat.html')">chat.html ⤓</button>
+              <button class="btn-swiss" onclick="downloadFile('chat_web.html')">chat_web.html ⤓</button>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="box-title">DEPLOYMENT CONFIGURATIONS</div>
+            <p class="box-desc" style="margin-bottom: 0.85rem;" data-en="Render Blueprints & Docker infrastructure." data-es="Blueprints de Render e infraestructura Docker.">Render Blueprints & Docker infrastructure.</p>
+            <div class="action-row" style="margin-top: 0;">
+              <button class="btn-swiss primary" onclick="downloadFile('render.yaml')">render.yaml ⤓</button>
+              <button class="btn-swiss" onclick="downloadFile('docker-compose.yml')">docker-compose.yml ⤓</button>
+              <button class="btn-swiss" onclick="downloadFile('.env.example')">.env.example ⤓</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="box" style="margin-top: 1rem;">
+          <div class="box-title" data-en="FULL REPOSITORY ARCHIVE" data-es="DOCUMENTACIÓN COMPLETA">FULL REPOSITORY ARCHIVE</div>
+          <p class="box-desc" data-en="Access the full bilingual Markdown manuals located in docs/MANUAL_HERMES_RENDER.md and README.md." data-es="Accede a los manuales completos en formato Markdown en docs/MANUAL_HERMES_RENDER.md y README.md.">
+            Access the full bilingual Markdown manuals located in docs/MANUAL_HERMES_RENDER.md and README.md.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Free Models Showcase -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">10 // FREE MODELS CATALOG (:free)</div>
+        <h2 data-en="State-of-the-Art Free Open Weights" data-es="Modelos Abiertos Gratuitos Punteros">State-of-the-Art Free Open Weights</h2>
+        <p data-en="Switch between these high-performance models by updating MODEL_NAME in Render anytime:"
+           data-es="Cambia entre estos potentes modelos actualizando MODEL_NAME en Render en cualquier momento:">
+          Switch between these high-performance models by updating MODEL_NAME in Render anytime:
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>MODEL IDENTIFIER</th>
+                <th data-en="SPECIALIZATION" data-es="ESPECIALIDAD">SPECIALIZATION</th>
+                <th data-en="ACTION" data-es="ACCIÓN">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>meta-llama/llama-3.3-70b-instruct:free</code></td>
+                <td data-en="All-rounder, 70B params, top reasoning & creative prose" data-es="Todoterreno, 70B parámetros, razonamiento de élite">All-rounder, 70B params, top reasoning & creative prose</td>
+                <td><button class="copy-pill" onclick="copySnippet('meta-llama/llama-3.3-70b-instruct:free')">COPY</button></td>
+              </tr>
+              <tr>
+                <td><code>google/gemini-2.0-flash-lite:free</code></td>
+                <td data-en="Ultra-low latency, massive context memory" data-es="Velocidad extrema y gran ventana de contexto">Ultra-low latency, massive context memory</td>
+                <td><button class="copy-pill" onclick="copySnippet('google/gemini-2.0-flash-lite:free')">COPY</button></td>
+              </tr>
+              <tr>
+                <td><code>deepseek/deepseek-r1:free</code></td>
+                <td data-en="Chain-of-thought logic, deep math and scientific reasoning" data-es="Razonamiento reflexivo paso a paso y matemáticas">Chain-of-thought logic, deep math and scientific reasoning</td>
+                <td><button class="copy-pill" onclick="copySnippet('deepseek/deepseek-r1:free')">COPY</button></td>
+              </tr>
+              <tr>
+                <td><code>qwen/qwen-2.5-coder-32b-instruct:free</code></td>
+                <td data-en="Software engineering, syntax analysis, refactoring" data-es="Ingeniería de software y depuración de código">Software engineering, syntax analysis, refactoring</td>
+                <td><button class="copy-pill" onclick="copySnippet('qwen/qwen-2.5-coder-32b-instruct:free')">COPY</button></td>
+              </tr>
+              <tr>
+                <td><code>openrouter/free</code></td>
+                <td data-en="Automatic smart routing to the healthiest free provider" data-es="Enrutador inteligente al mejor modelo libre activo">Automatic smart routing to the healthiest free provider</td>
+                <td><button class="copy-pill" onclick="copySnippet('openrouter/free')">COPY</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11: 24/7 Keep-Alive Pro Tip -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">11 // 24/7 KEEP-ALIVE SYSTEM</div>
+        <h2 data-en="Prevent Sleep Mode with Free Heartbeats" data-es="Evita la Suspensión con Pings Gratuitos">Prevent Sleep Mode with Free Heartbeats</h2>
+        <p data-en="Render's free tier enters sleep mode after 15 minutes of inactivity. Eliminate the 35s cold start delay:"
+           data-es="El plan gratuito de Render entra en suspensión tras 15 minutos de inactividad. Elimina el retraso inicial:">
+          Render's free tier enters sleep mode after 15 minutes of inactivity. Eliminate the 35s cold start delay:
+        </p>
+
+        <div class="grid-2">
+          <div class="box">
+            <div class="box-title" data-en="01 / COPY RENDER URL" data-es="01 / COPIA TU URL DE RENDER">01 / COPY RENDER URL</div>
+            <p class="box-desc" data-en="Locate your service URL in Render (e.g. https://hermes-free.onrender.com)." data-es="Copia la URL de tu servicio en Render (ej: https://hermes-gratis.onrender.com).">
+              Locate your service URL in Render (e.g. https://hermes-free.onrender.com).
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title" data-en="02 / SCHEDULE CRON-JOB" data-es="02 / PROGRAMA EL CRON-JOB">02 / SCHEDULE CRON-JOB</div>
+            <p class="box-desc" data-en="Register for free on cron-job.org. Create a job sending an HTTP GET request to your URL every 10 minutes." data-es="Regístrate gratis en cron-job.org. Crea una tarea que envíe una petición GET cada 10 minutos.">
+              Register for free on cron-job.org. Create a job sending an HTTP GET request to your URL every 10 minutes.
+            </p>
+          </div>
+        </div>
+
+        <div class="box" style="margin-top: 1rem; border-color: var(--lime);">
+          <div class="box-title" style="color: var(--lime);" data-en="RESULT: INSTANT ZERO-LATENCY 24/7 REPLIES" data-es="RESULTADO: RESPUESTAS INSTANTÁNEAS 24/7">RESULT: INSTANT ZERO-LATENCY 24/7 REPLIES</div>
+          <p class="box-desc" data-en="Render will never spin down your instance, giving you instantaneous responses in your browser and on Telegram day and night." data-es="Render nunca apagará tu instancia, ofreciéndote respuestas instantáneas en navegador y Telegram día y noche.">
+            Render will never spin down your instance, giving you instantaneous responses in your browser and on Telegram day and night.
+          </p>
+        </div>
+
+        <div class="action-row">
+          <a href="https://cron-job.org" target="_blank" class="btn-swiss primary">Open Cron-Job.org ↗</a>
+          <a href="https://uptimerobot.com" target="_blank" class="btn-swiss">Open UptimeRobot ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 12: Hermes Web Dashboard -->
+    <div class="slide">
+      <div class="canvas-card">
+        <div class="sec-index">12 // ADVANCED MANAGEMENT // WEB DASHBOARD</div>
+        <h2 data-en="Hermes Web Dashboard<br><span style='color: var(--accent);'>Full Visual Control & Modification</span>"
+            data-es="Hermes Web Dashboard<br><span style='color: var(--accent);'>Control Visual Completo y Modificación</span>">
+          Hermes Web Dashboard<br><span style='color: var(--accent);'>Full Visual Control & Modification</span>
+        </h2>
+        <p data-en="For advanced power users: access the official Hermes Agent admin dashboard at <code>/dashboard</code> on your Render deployment to modify configuration, connect MCP servers, inspect real-time logs, and monitor analytics."
+           data-es="Para usuarios avanzados: accede al panel de administración oficial en <code>/dashboard</code> en tu servidor de Render para modificar la configuración, conectar servidores MCP, ver logs en vivo y analizar el uso de tokens.">
+          For advanced power users: access the official Hermes Agent admin dashboard at <code>/dashboard</code> on your Render deployment to modify configuration, connect MCP servers, inspect real-time logs, and monitor analytics.
+        </p>
+
+        <div class="grid-2">
+          <div class="box">
+            <div class="box-title" data-en="01 / CONFIG & ENV EDITOR" data-es="01 / EDITOR DE CONFIG Y ENV">01 / CONFIG & ENV EDITOR</div>
+            <p class="box-desc"
+               data-en="Visually tune over 150 parameters in <code>config.yaml</code> (reasoning, memory, timeouts, approval modes) and manage provider credentials in <code>.env</code> without terminal editing."
+               data-es="Ajusta visualmente más de 150 parámetros en <code>config.yaml</code> (razonamiento, memoria, timeouts, modo de aprobación) y gestiona credenciales en <code>.env</code> sin tocar la consola.">
+              Visually tune over 150 parameters in <code>config.yaml</code> (reasoning, memory, timeouts, approval modes) and manage provider credentials in <code>.env</code> without terminal editing.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title" data-en="02 / MCP & SKILL HUB" data-es="02 / SERVIDORES MCP Y SKILLS">02 / MCP & SKILL HUB</div>
+            <p class="box-desc"
+               data-en="Register HTTP/SSE or stdio MCP servers, test tool availability, toggle skills on/off, and install verified toolsets with 1-click from the Nous Research catalog."
+               data-es="Registra servidores MCP (HTTP/SSE o stdio), prueba herramientas, activa o desactiva skills e instala extensiones verificadas con un clic desde el catálogo de Nous.">
+              Register HTTP/SSE or stdio MCP servers, test tool availability, toggle skills on/off, and install verified toolsets with 1-click from the Nous Research catalog.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title" data-en="03 / LOGS & TOKEN ANALYTICS" data-es="03 / LOGS Y ANALÍTICA DE TOKENS">03 / LOGS & TOKEN ANALYTICS</div>
+            <p class="box-desc"
+               data-en="Live log tailing with level/component filtering (gateway, agent, tools, cli) and 7/30/90-day charts breaking down token consumption and cache hit rates."
+               data-es="Seguimiento de logs en vivo con filtros por severidad y componente, junto a gráficos de 7/30/90 días desglosando el consumo de tokens y aciertos de caché.">
+              Live log tailing with level/component filtering (gateway, agent, tools, cli) and 7/30/90-day charts breaking down token consumption and cache hit rates.
+            </p>
+          </div>
+
+          <div class="box">
+            <div class="box-title" data-en="04 / CRON & DESKTOP CONNECT" data-es="04 / CRON Y CONEXIÓN HERMES DESKTOP">04 / CRON & DESKTOP CONNECT</div>
+            <p class="box-desc"
+               data-en="Schedule recurring agent prompts (e.g. daily summaries) delivered to Telegram/Discord, and connect the official Hermes Desktop app remotely via WebSocket."
+               data-es="Programa prompts recurrentes (ej. informes diarios) enviados a Telegram/Discord, y conecta la aplicación oficial Hermes Desktop de forma remota por WebSocket.">
+              Schedule recurring agent prompts (e.g. daily summaries) delivered to Telegram/Discord, and connect the official Hermes Desktop app remotely via WebSocket.
+            </p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a href="/dashboard" class="btn-swiss primary" data-en="Open Web Dashboard ➔" data-es="Abrir Web Dashboard ➔">Open Web Dashboard ➔</a>
+          <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/web-dashboard" target="_blank" class="btn-swiss" data-en="Official Docs ↗" data-es="Documentación Oficial ↗">Official Docs ↗</a>
+          <button class="btn-swiss" onclick="navSlide(1)" data-en="Next ➔" data-es="Siguiente ➔">Next ➔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 13: Summary & FAQ -->
+    <div class="slide">
+      <div class="canvas-card" style="text-align: center;">
+        <div class="sec-index" style="justify-content: center;">13 // COMPLETE DEPLOYMENT VERIFIED</div>
+        <h1 data-en="You Are Now Subscription-Free" data-es="Eres Oficialmente Libre de Suscripciones">You Are Now Subscription-Free</h1>
+        <p style="max-width: 650px; margin: 0 auto 1.25rem auto;"
+           data-en="Congratulations! You have deployed a persistent, autonomous AI agent with zero operating costs, protected privacy, and universal accessibility."
+           data-es="¡Enhorabuena! Has desplegado un agente de IA persistente y autónomo con coste cero, privacidad protegida y acceso universal.">
+          Congratulations! You have deployed a persistent, autonomous AI agent with zero operating costs, protected privacy, and universal accessibility.
+        </p>
+
+        <div class="grid-3" style="text-align: left; max-width: 860px; margin: 0 auto 1.5rem auto;">
+          <div class="box">
+            <div class="box-title">COST</div>
+            <p class="box-desc" style="color: var(--lime); font-weight: 700;">$0.00 / FOREVER</p>
+          </div>
+
+          <div class="box">
+            <div class="box-title">ACCESS</div>
+            <p class="box-desc">Browser & Telegram</p>
+          </div>
+
+          <div class="box">
+            <div class="box-title">INTELLIGENCE</div>
+            <p class="box-desc">70B Open Weights</p>
+          </div>
+        </div>
+
+        <div class="action-row" style="justify-content: center;">
+          <button class="btn-swiss primary" onclick="navSlide(0)" data-en="Restart Presentation ↺" data-es="Reiniciar Presentación ↺">Restart Presentation ↺</button>
+          <a href="https://github.com/NousResearch/hermes-agent" target="_blank" class="btn-swiss">NousResearch Hermes Repo ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Technical Footer -->
+  <footer>
+    <div class="status-coords">
+      <span>GRID: 32x32PX</span>
+      <span class="hide-sm">MODE: PRESENTATION // MANUAL</span>
+      <span class="tech-tag hide-sm" style="border: none; padding: 0;">KEYS: [← / → / SPACE / F]</span>
+    </div>
+
+    <div class="nav-rack">
+      <span class="counter-gauge" id="counterGauge">01 / 12</span>
+      <button class="btn-ctrl" id="prevBtn" onclick="navSlide(-1)">PREV</button>
+      <button class="btn-ctrl primary" id="nextBtn" onclick="navSlide(1)">NEXT</button>
+    </div>
+  </footer>
+
+  <script>
+    let slideIdx = 0;
+    let lang = 'en'; // Default English as required
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    const counter = document.getElementById('counterGauge');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const btnEn = document.getElementById('btnEn');
+    const btnEs = document.getElementById('btnEs');
+
+    function updateView() {
+      slides.forEach((s, idx) => {
+        s.classList.remove('active');
+        if (idx === slideIdx) {
+          s.classList.add('active');
+          // Reset scroll to top on slide change
+          const card = s.querySelector('.canvas-card');
+          if (card) card.scrollTop = 0;
+        }
+      });
+
+      const currentFormatted = String(slideIdx + 1).padStart(2, '0');
+      const totalFormatted = String(total).padStart(2, '0');
+      counter.textContent = `${currentFormatted} / ${totalFormatted}`;
+
+      prevBtn.disabled = slideIdx === 0;
+      prevBtn.style.opacity = slideIdx === 0 ? '0.3' : '1';
+
+      if (slideIdx === total - 1) {
+        nextBtn.textContent = lang === 'en' ? 'RESTART ↺' : 'REINICIAR ↺';
+      } else {
+        nextBtn.textContent = lang === 'en' ? 'NEXT ➔' : 'SIGUIENTE ➔';
+      }
+    }
+
+    function navSlide(dir) {
+      if (dir === 1 && slideIdx === total - 1) {
+        slideIdx = 0;
+      } else if (dir === 0) {
+        slideIdx = 0;
+      } else {
+        slideIdx = Math.max(0, Math.min(total - 1, slideIdx + dir));
+      }
+      updateView();
+    }
+
+    function setLang(selected) {
+      lang = selected;
+      btnEn.classList.toggle('active', lang === 'en');
+      btnEs.classList.toggle('active', lang === 'es');
+
+      document.querySelectorAll('[data-en]').forEach(el => {
+        const text = el.getAttribute(`data-${lang}`);
+        if (text) el.innerHTML = text;
+      });
+
+      prevBtn.textContent = lang === 'en' ? 'PREV' : 'ANTERIOR';
+      updateView();
+    }
+
+    // Keyboard bindings
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        navSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        navSlide(-1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    // Mobile Touch Swipe Handling
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const viewport = document.getElementById('viewport');
+
+    viewport.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+
+      // Only handle horizontal swipe if horizontal movement is significantly greater than vertical
+      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < 0) {
+          navSlide(1); // Swipe left -> Next
+        } else {
+          navSlide(-1); // Swipe right -> Prev
+        }
+      }
+    }, { passive: true });
+
+    function copySnippet(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert(lang === 'en' ? `Copied to clipboard:\n${text}` : `Copiado al portapapeles:\n${text}`);
+      });
+    }
+
+    // Embedded File Content for One-Click Downloads
+    const filePayloads = {
+      'render.yaml': `services:
+  - type: web
+    name: hermes-agent-free
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: meta-llama/llama-3.3-70b-instruct:free
+      - key: PORT
+        value: "10000"
+      - key: API_SERVER_KEY
+        generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_ALLOWED_USERS
+        sync: false`,
+
+      'docker-compose.yml': `version: "3.8"
+services:
+  hermes:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: hermes-agent
+    restart: unless-stopped
+    ports:
+      - "10000:10000"
+    environment:
+      - OPENROUTER_API_KEY=\${OPENROUTER_API_KEY}
+      - MODEL_NAME=\${MODEL_NAME:-meta-llama/llama-3.3-70b-instruct:free}
+      - PORT=10000
+      - API_SERVER_KEY=\${API_SERVER_KEY:-secret_hermes_password_2026}
+      - TELEGRAM_BOT_TOKEN=\${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_ALLOWED_USERS=\${TELEGRAM_ALLOWED_USERS:-}
+    volumes:
+      - hermes_data:/opt/data
+
+volumes:
+  hermes_data:`,
+
+      '.env.example': `# OPENROUTER KEY
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# MODEL
+MODEL_NAME=meta-llama/llama-3.3-70b-instruct:free
+
+# SERVER
+PORT=10000
+API_SERVER_ENABLED=true
+API_SERVER_PORT=10000
+API_SERVER_KEY=clave_secreta_hermes_2026
+
+# TELEGRAM (OPTIONAL)
+TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrSTUvwxyz
+TELEGRAM_ALLOWED_USERS=123456789`
+    };
+
+    function downloadFile(filename) {
+      if (filename === 'chat.html' || filename === 'chat_web.html') {
+        window.open(filename, '_blank');
+        return;
+      }
+
+      const content = filePayloads[filename];
+      if (!content) {
+        alert('File payload not found.');
+        return;
+      }
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Init
+    updateView();
+  </script>
+</body>
+</html>
