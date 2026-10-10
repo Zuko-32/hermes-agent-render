@@ -1,24 +1,20 @@
-# Imagen base ligera con Node 20
-FROM node:20-alpine
 
-# Directorio de trabajo dentro del contenedor
+FROM node:20-alpine
 WORKDIR /opt/app
 
-# Copiar package.json y package-lock.json (si existe) e instalar dependencias
+# Copiar package.json primero para cache de dependencias
 COPY package*.json ./
-RUN npm install --production
+RUN if [ -f package.json ]; then npm install --production; fi
 
-# Copiar el resto de archivos de la app al contenedor
+# Copiar el resto de archivos
 COPY . .
 
-# Asegurar que el script de arranque sea ejecutable
-COPY ws-to-sse-proxy.js /opt/app/ws-to-sse-proxy.js
-COPY start.sh /opt/app/start.sh
+# Asegurar permisos
 RUN chmod +x /opt/app/start.sh
 
-# Puerto que expondrá la app (Render usará la variable PORT)
 ENV PORT=10000
 EXPOSE 10000
 
-# Comando que arranca el contenedor (usa tu start.sh)
+# Ejecutar start.sh (que a su vez ejecuta node ws-to-sse-proxy.js)
 CMD ["/opt/app/start.sh"]
+
