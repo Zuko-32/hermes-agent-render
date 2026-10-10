@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env sh
 set -e
 
-# Lanzar proxy SSE en background
-node /opt/app/ws-to-sse-proxy.js &
+# Variables por defecto si no están definidas
+: "${PORT:=10000}"
+: "${REMOTE_MCP_WS:=ws://89.6.129.67:3000}"
 
-# Espera corta opcional para asegurar que el proxy arranque
-sleep 1
+# Exportar para Node si tu app las lee desde process.env
+export PORT
+export REMOTE_MCP_WS
 
-# Arrancar Hermes (ajusta el comando si tu entrypoint es distinto)
-# Reemplaza la línea siguiente por el comando real que inicia Hermes en tu imagen
-exec node /opt/app/hermes-entrypoint.js
+# Ejecutar el proxy en primer plano (no en background)
+exec node /opt/app/ws-to-sse-proxy.js
